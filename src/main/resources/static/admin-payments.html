@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin — Payments | RentoVerse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rento: {
+                            50: '#eef6ff',
+                            100: '#d9eaff',
+                            200: '#bcd8ff',
+                            300: '#91bfff',
+                            400: '#5d9cff',
+                            500: '#3b82f6',
+                            600: '#2f6ad1',
+                            700: '#2656a8',
+                            800: '#1f4687',
+                            900: '#1b3a70'
+                        },
+                        accent: '#8b5cf6'
+                    },
+                    boxShadow: {
+                        soft: '0 14px 40px rgba(2, 6, 23, .10)',
+                        glow: '0 10px 25px rgba(16,185,129,.35)'
+                    },
+                    keyframes: {
+                        floaty: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-6px)' } },
+                        sheengrad: { '0%': { backgroundPosition: '0% 50%' }, '100%': { backgroundPosition: '100% 50%' } }
+                    },
+                    animation: {
+                        floaty: 'floaty 6s ease-in-out infinite',
+                        sheengrad: 'sheengrad 4s linear infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ---------- Small helpers (pure Tailwind, but grouped for clarity) ---------- */
+        .halo {
+            position: relative;
+            border-radius: 1.25rem; /* ~rounded-2xl */
+        }
+        .halo::before {
+            content: "";
+            position: absolute; inset: -2px;
+            border-radius: inherit;
+            background: linear-gradient(135deg, #10b981, #14b8a6, #60a5fa, #8b5cf6);
+            filter: blur(8px); opacity: .25;
+            z-index: -1;
+        }
+        .glass {
+            background: rgba(255,255,255,.86);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .pill { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
+        .badge-gray   { @apply bg-gray-100 text-gray-700; }
+        .badge-yellow { @apply bg-yellow-100 text-yellow-800; }
+        .badge-green  { @apply bg-green-100 text-green-800; }
+        .badge-red    { @apply bg-red-100 text-red-800; }
+        .badge-blue   { @apply bg-blue-100 text-blue-800; }
+
+        /* table polish */
+        th { @apply font-semibold text-[12px] sm:text-[13px] uppercase tracking-wide; }
+        td { @apply align-top; }
+
+        /* subtle custom scroll for overflow-x */
+        .scroll-smooth::-webkit-scrollbar { height: 8px; }
+        .scroll-smooth::-webkit-scrollbar-track { background: transparent; }
+        .scroll-smooth::-webkit-scrollbar-thumb { background: rgba(2,6,23,.12); border-radius: 8px; }
+        .scroll-smooth:hover::-webkit-scrollbar-thumb { background: rgba(2,6,23,.25); }
+
+        /* dropdown entrance */
+        .dropdown-enter { transform: translateY(-6px); opacity: 0; }
+        .dropdown-enter-active { transform: translateY(0); opacity: 1; transition: all .18s ease; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-white via-rento-50 to-indigo-50 text-gray-900">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+
+    <!-- Top bar (glass + gradient line) -->
+    <div class="halo">
+        <div class="glass rounded-2xl shadow-soft border border-white/60">
+            <div class="h-1 w-full rounded-t-2xl bg-[linear-gradient(90deg,#059669,#14b8a6,#6366f1,#8b5cf6)] bg-[length:200%_100%] animate-sheengrad"></div>
+
+            <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center justify-between px-5 sm:px-6 py-4">
+                <a href="index.html" class="inline-flex items-center gap-2 text-emerald-700 font-semibold hover:underline">
+                    <span class="text-lg">←</span> Home
+                </a>
+
+                <div class="flex-1 flex items-center justify-center sm:justify-start">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 shadow-sm">
+                        <span class="text-xl">💳</span>
+                        <span class="text-sm font-semibold">Payments Console</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 sm:gap-4 ml-auto">
+                    <button onclick="location.reload()"
+                            class="text-sm bg-gradient-to-r from-emerald-600 to-teal-500 text-white px-3 py-1.5 rounded-lg shadow hover:brightness-110 active:scale-[.98] transition">
+                        Refresh
+                    </button>
+
+                    <!-- Admin menu (IDs preserved) -->
+                    <div id="adminInfo" class="relative hidden">
+                        <div id="adminToggle" class="flex items-center gap-3 cursor-pointer select-none">
+                            <div class="text-right leading-tight">
+                                <p id="adminName" class="font-semibold text-gray-800">Admin</p>
+                                <p id="adminEmail" class="text-gray-500 text-sm">admin@example.com</p>
+                            </div>
+                            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 text-white grid place-items-center shadow">
+                                A
+                            </div>
+                        </div>
+                        <div id="adminDropdown"
+                             class="absolute right-0 mt-2 w-56 bg-white shadow-lg rounded-xl py-2 text-sm text-gray-700 hidden border border-gray-100 dropdown-enter">
+                            <a href="admin-support.html" class="block px-4 py-2 hover:bg-gray-50">📩 Support Tickets</a>
+                            <a href="admin-payments.html" class="block px-4 py-2 hover:bg-gray-50">💳 Admin Payments</a>
+                            <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-50">🚪 Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-5 sm:px-6 pb-5">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Admin — Payments</h1>
+                <p class="text-sm text-gray-500 mt-1">Track renter payments, verify transactions, and process provider payouts.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters (chips + inputs) -->
+    <div class="halo">
+        <div class="rounded-2xl glass shadow-soft border border-white/60 p-4 sm:p-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+                <div class="lg:col-span-1">
+                    <label class="block text-sm font-medium mb-1">Status</label>
+                    <select id="filterStatus" class="w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500">
+                        <option value="">All</option>
+                        <option value="PENDING">PENDING</option>
+                        <option value="CONFIRMED">CONFIRMED</option>
+                        <option value="REFUNDED">REFUNDED</option>
+                        <option value="FAILED">FAILED</option>
+                    </select>
+                </div>
+                <div class="lg:col-span-1">
+                    <label class="block text-sm font-medium mb-1">Booking ID</label>
+                    <input id="filterBooking" type="number" placeholder="e.g., 42"
+                           class="w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500">
+                </div>
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium mb-1">Renter email</label>
+                    <input id="filterEmail" type="email" placeholder="user@mail.com"
+                           class="w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500">
+                </div>
+                <div class="lg:col-span-1 flex items-end justify-between gap-3">
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700 select-none">
+                        <input id="filterOverdue" type="checkbox" class="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                        Overdue only
+                    </label>
+                    <button id="applyFilters"
+                            class="bg-gradient-to-r from-emerald-600 to-teal-500 text-white px-4 py-2 rounded-lg shadow hover:brightness-110 active:scale-[.98] transition">
+                        Apply
+                    </button>
+                </div>
+            </div>
+
+            <!-- Legend (helps visually) -->
+            <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                <span class="pill badge-yellow">Pending</span>
+                <span class="pill badge-green">Confirmed</span>
+                <span class="pill badge-blue">Refunded</span>
+                <span class="pill badge-red">Failed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="halo">
+        <div class="rounded-2xl glass shadow-soft border border-white/60 overflow-hidden">
+            <div class="overflow-x-auto scroll-smooth">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-gray-100/70 backdrop-blur sticky top-0 z-10">
+                    <tr class="text-gray-700">
+                        <th class="px-4 py-3 text-left">Payment ID</th>
+                        <th class="px-4 py-3 text-left">Booking</th>
+                        <th class="px-4 py-3 text-left">Renter (email)</th>
+                        <th class="px-4 py-3 text-left">Payer Name</th>
+                        <th class="px-4 py-3 text-left">Phone</th>
+                        <th class="px-4 py-3 text-left">Room Code</th>
+                        <th class="px-4 py-3 text-left">Txn ID</th>
+                        <th class="px-4 py-3 text-left">Amount</th>
+                        <th class="px-4 py-3 text-left">Method</th>
+                        <th class="px-4 py-3 text-left">Status</th>
+                        <th class="px-4 py-3 text-left">Created</th>
+                        <th class="px-4 py-3 text-left">Confirmed</th>
+                        <th class="px-4 py-3 text-left">Window</th>
+                        <th class="px-4 py-3 text-left">Decision</th>
+                        <th class="px-4 py-3 text-left">Note</th>
+                        <th class="px-4 py-3 text-left">Payout</th>
+                        <th class="px-4 py-3 text-left">Actions</th>
+                    </tr>
+                    </thead>
+                    <!-- Keep this tbody id for JS insertion -->
+                    <tbody id="paymentsBody"
+                           class="[&>tr:nth-child(even)]:bg-gray-50/40 [&>tr:hover]:bg-emerald-50/40 transition"></tbody>
+                </table>
+            </div>
+
+            <div class="px-4 py-3 text-xs text-gray-500 border-t border-gray-100">
+                Tip: Click a row’s “Payout” to view provider payout details.
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast (ID preserved) -->
+    <div id="toast"
+         class="fixed bottom-6 right-6 hidden px-4 py-2 rounded text-white shadow-lg bg-emerald-600"></div>
+</div>
+
+<!-- Payout details modal (IDs preserved) -->
+<div id="payoutModal" class="fixed inset-0 z-50 hidden">
+    <div id="payoutBackdrop" class="absolute inset-0 bg-black/40"></div>
+
+    <div class="relative mx-auto mt-20 w-[92%] max-w-xl">
+        <div class="rounded-2xl bg-white shadow-xl border border-white/70 overflow-hidden">
+            <!-- Gradient bar -->
+            <div class="h-1 w-full bg-[linear-gradient(90deg,#10b981,#14b8a6,#60a5fa,#8b5cf6)] bg-[length:200%_100%] animate-sheengrad"></div>
+
+            <div class="p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex h-8 w-8 rounded-xl bg-emerald-100 text-emerald-700 items-center justify-center">💸</span>
+                        <h3 class="text-lg font-semibold">Provider Payout</h3>
+                    </div>
+                    <button id="payoutClose" class="text-gray-500 hover:text-gray-700">✕</button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6 text-sm">
+                    <div><span class="font-semibold">Booking:</span> <span id="po_booking" class="ml-1 text-gray-700">-</span></div>
+                    <div><span class="font-semibold">Provider:</span> <span id="po_provider" class="ml-1 text-gray-700">-</span></div>
+                    <div><span class="font-semibold">Room Code:</span> <span id="po_room" class="ml-1 text-gray-700">-</span></div>
+                    <div><span class="font-semibold">Method:</span> <span id="po_method" class="ml-1 text-gray-700">-</span></div>
+                    <div><span class="font-semibold">Account:</span> <span id="po_account" class="ml-1 text-gray-700">-</span></div>
+                    <div><span class="font-semibold">Requested At:</span> <span id="po_requested" class="ml-1 text-gray-700">-</span></div>
+                    <div class="sm:col-span-2"><span class="font-semibold">Status:</span> <span id="po_status" class="ml-2 pill badge-blue">-</span></div>
+                </div>
+
+                <div class="mt-5 flex justify-end gap-2">
+                    <button id="payoutMarkPaid"
+                            class="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 text-white text-sm shadow active:scale-[.98] transition">
+                        Mark Paid & Notify
+                    </button>
+                    <button id="payoutClose2" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Keep your logic -->
+<script src="js/admin-payments.js"></script>
+
+<!-- Optional tiny helper: dropdown show/hide animation (safe) -->
+<script>
+    (function () {
+        const toggle = document.getElementById('adminToggle');
+        const dd = document.getElementById('adminDropdown');
+        if (toggle && dd) {
+            toggle.addEventListener('click', () => {
+                dd.classList.toggle('hidden');
+                dd.classList.add('dropdown-enter');
+                dd.getBoundingClientRect(); // reflow
+                dd.classList.add('dropdown-enter-active');
+                setTimeout(() => dd.classList.remove('dropdown-enter','dropdown-enter-active'), 220);
+            });
+            document.addEventListener('click', (e) => {
+                if (!dd.contains(e.target) && !toggle.contains(e.target)) dd.classList.add('hidden');
+            });
+        }
+    })();
+</script>
+</body>
+</html>

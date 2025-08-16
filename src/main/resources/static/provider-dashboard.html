@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Provider Dashboard | RentoVerse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes floatSlow{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
+    </style>
+</head>
+<body class="bg-gradient-to-b from-emerald-50 via-white to-white text-gray-800">
+
+<header class="sticky top-0 z-10 shadow-sm bg-gradient-to-r from-emerald-700 via-teal-700 to-sky-700 text-white">
+    <div class="max-w-7xl mx-auto px-6 h-14 grid grid-cols-3 items-center">
+        <a href="index.html" class="justify-self-start font-semibold text-white/90 hover:text-white underline-offset-4 hover:underline">Home</a>
+        <h1 class="justify-self-center text-xl md:text-2xl font-extrabold">Provider Dashboard</h1>
+        <div class="justify-self-end flex items-center gap-3">
+            <div class="flex items-center gap-2 rounded-xl bg-white/10 px-3 py-1.5">
+        <span class="inline-grid place-items-center w-7 h-7 rounded-full bg-white/20">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5.006 5.006 0 0 0 5 5Zm0 2c-5.33 0-8 2.667-8 4v1h16v-1c0-1.333-2.67-4-8-4Z"/></svg>
+        </span>
+                <div class="leading-tight">
+                    <div id="providerName" class="font-semibold truncate max-w-[12rem] sm:max-w-[14rem]">Loading...</div>
+                    <div id="providerEmail" class="text-white/80 text-xs truncate max-w-[14rem] sm:max-w-[16rem]">Loading...</div>
+                </div>
+            </div>
+            <button onclick="logout()" class="px-3 py-1.5 rounded-md bg-white/10 hover:bg-white/20 font-semibold">Logout</button>
+        </div>
+    </div>
+</header>
+
+<div class="max-w-7xl mx-auto px-6 py-10">
+    <div class="bg-white p-6 rounded-lg shadow mb-8 flex justify-between items-center">
+        <div class="text-lg font-semibold">Quick Actions</div>
+        <a href="post-room.html" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold transition">➕ Post a Room</a>
+    </div>
+
+    <section class="mb-12">
+        <h2 class="text-xl font-semibold mb-4">📦 My Posted Rooms</h2>
+        <div id="myRooms" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <section class="mt-10">
+        <h2 class="text-xl font-semibold mb-3">📩 Booking Requests</h2>
+        <div id="bookingRequests" class="space-y-5">
+            <p class="text-gray-500">⏳ Loading booking requests...</p>
+        </div>
+    </section>
+</div>
+
+<!-- Payout Request Modal -->
+<div id="payoutReqModal" class="fixed inset-0 z-50 hidden">
+    <div id="prBackdrop" class="absolute inset-0 bg-black/40"></div>
+    <div class="relative mx-auto mt-24 w-[92%] max-w-md rounded-2xl bg-white shadow-xl p-5">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-lg font-semibold">Request 25% Payout</h3>
+            <button id="prClose" class="text-gray-500 hover:text-gray-700">✕</button>
+        </div>
+        <form id="payoutForm" class="space-y-3">
+            <input type="hidden" id="prBookingId">
+            <div>
+                <label class="block text-sm font-medium mb-1">Room Code</label>
+                <input id="prRoomCode" class="w-full border rounded px-3 py-2" placeholder="e.g., RENTO:101">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Method</label>
+                <select id="prMethod" class="w-full border rounded px-3 py-2">
+                    <option value="BKASH">bKash</option>
+                    <option value="NAGAD">Nagad</option>
+                    <option value="ROCKET">Rocket</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Account / Number</label>
+                <input id="prAccount" class="w-full border rounded px-3 py-2" placeholder="01XXXXXXXXX">
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2">Submit Request</button>
+        </form>
+    </div>
+</div>
+
+<!-- Your JS (updated below) -->
+<script src="js/provider-dashboard.js"></script>
+</body>
+</html>

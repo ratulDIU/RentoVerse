@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register | RentoVerse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        html, body { height: 100%; }
+        body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans"; }
+        @keyframes floatSlow { 0% { transform: translateY(0px);} 50% { transform: translateY(-10px);} 100% { transform: translateY(0px);} }
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .animated-gradient { background-size: 300% 300%; animation: gradientMove 9s ease infinite; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-100 via-sky-100 to-purple-100">
+<!-- soft background blobs -->
+<div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-24 -left-16 h-72 w-72 rounded-full bg-indigo-400/20 blur-3xl animate-[floatSlow_10s_ease-in-out_infinite]"></div>
+    <div class="absolute -bottom-20 -right-10 h-96 w-96 rounded-full bg-fuchsia-400/20 blur-3xl animate-[floatSlow_12s_ease-in-out_infinite]"></div>
+</div>
+
+<!-- Navbar -->
+<header class="relative z-10 bg-indigo-50">
+    <div class="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
+        <a href="/index.html" class="group inline-flex items-center gap-3 ml-4 md:ml-8">
+            <img src="https://img.icons8.com/fluency/48/home.png" alt="Logo" class="w-6 h-6" />
+            <span class="text-xl sm:text-2xl font-extrabold tracking-tight" style="color:#1E56E5">RentoVerse</span>
+        </a>
+        <a href="/login.html"
+           class="mr-4 md:mr-8 text-sm font-bold text-indigo-700 hover:text-indigo-900">
+            Sign in
+        </a>
+    </div>
+</header>
+
+<!-- Content -->
+<main class="relative z-10">
+    <div class="mx-auto max-w-7xl px-4 py-8 lg:py-12">
+        <div class="grid grid-cols-1 place-items-center gap-6">
+
+
+            <!-- Right: form -->
+            <section>
+                <!-- gradient border wrapper -->
+                <div class="p-[3px] rounded-2xl animated-gradient bg-gradient-to-r from-black-500 via-indigo-300 to-black-500 shadow-xl w-full max-w-md mx-auto">
+                    <div class="rounded-2xl bg-transparent p-6 sm:p-8 shadow-lg ring-1 ring-slate-200 w-full max-w-md">
+                        <div class="mb-6 text-center">
+                            <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">Create your account</h2>
+                            <p class="mt-2 text-sm text-slate-600">It only takes a minute. We’ll send a code to verify your email.</p>
+                        </div>
+
+                        <form id="registerForm" class="space-y-5">
+                            <!-- Name -->
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-slate-700">Full Name</label>
+                                <input id="name" name="name" type="text" required autocomplete="name" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder-slate-400 shadow-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20" placeholder="e.g. Sartho Pramanik" />
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
+                                <input id="email" name="email" type="email" required autocomplete="email" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-900 placeholder-slate-400 shadow-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20" placeholder="you@example.com" />
+                            </div>
+
+                            <!-- Password with eye button & strength meter -->
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
+                                    <button type="button" id="togglePwdBtn" class="text-xs font-medium text-slate-600 hover:text-slate-900 select-none">Show</button>
+                                </div>
+                                <div class="relative mt-1">
+                                    <input id="password" name="password" type="password" required class="peer w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 pr-12 text-slate-900 placeholder-slate-400 shadow-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20" placeholder="Minimum 8 characters" />
+                                    <button type="button" id="pwdEye" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-md hover:bg-slate-100 focus:outline-none" aria-label="Toggle password visibility">
+                                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-5 w-5 text-slate-500"><path fill="currentColor" d="M12 5c-5 0-9.27 3.11-10.77 7.5C2.73 16.89 7 20 12 20s9.27-3.11 10.77-7.5C21.27 8.11 17 5 12 5Zm0 12a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z"/></svg>
+                                    </button>
+                                </div>
+                                <div class="mt-2 h-1.5 w-full rounded-full bg-slate-200">
+                                    <div id="pwdBar" class="h-1.5 rounded-full bg-gradient-to-r from-rose-400 via-amber-400 to-emerald-400 w-0 transition-all"></div>
+                                </div>
+                                <p id="pwdHint" class="mt-1 text-xs text-slate-600">Use at least 8 characters with a mix of letters, numbers, and a symbol.</p>
+                            </div>
+
+                            <!-- Role -->
+                            <div>
+                                <label for="role" class="block text-sm font-medium text-slate-700">Role</label>
+                                <select id="role" name="role" required class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-slate-900 shadow-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20">
+                                    <option value="">Select your role</option>
+                                    <option value="RENTER">Renter</option>
+                                    <option value="PROVIDER">Provider</option>
+                                </select>
+                            </div>
+
+                            <!-- Submit -->
+                            <button type="submit" class="group relative inline-flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 font-semibold text-white shadow-md transition hover:scale-[1.02] hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/30">
+                                <span>Create account</span>
+                                <svg class="h-4 w-4 opacity-90 group-hover:translate-x-0.5 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                            </button>
+
+                            <p class="text-center text-sm text-slate-600">Already have an account? <a href="/login.html" class="font-medium text-indigo-700 hover:text-indigo-900">Sign in</a></p>
+                        </form>
+
+                        <p id="successMessage" class="mt-4 hidden text-center text-sm font-medium text-emerald-600">✅ Registration successful! Please check your email to verify your account.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<footer class="relative z-10 mx-auto max-w-7xl px-4 pb-8">
+    <p class="text-center text-xs text-slate-500">©️ <span id="year"></span> RentoVerse. All rights reserved.</p>
+</footer>
+
+<!-- scripts -->
+<script>
+    const yearEl = document.getElementById('year');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    const pwdInput = document.getElementById('password');
+    const bar = document.getElementById('pwdBar');
+    const hint = document.getElementById('pwdHint');
+    const eyeBtn = document.getElementById('pwdEye');
+    const eyeBtn2 = document.getElementById('togglePwdBtn');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    function strengthScore(v){ let s=0; if(v.length>=8) s++; if(/[A-Z]/.test(v)) s++; if(/[0-9]/.test(v)) s++; if(/[^A-Za-z0-9]/.test(v)) s++; return s; }
+    pwdInput?.addEventListener('input', e=>{ const v=e.target.value||''; const s=strengthScore(v); const widths=['0%','25%','50%','75%','100%']; bar.style.width=widths[s]; hint.textContent = s<3? 'Weak — try mixing letters, numbers & symbols.' : (s===3? 'Good — add a symbol for extra strength.' : 'Strong password!'); });
+
+    function togglePwd(){ const isPwd = pwdInput.type==='password'; pwdInput.type = isPwd? 'text':'password'; if(eyeBtn2) eyeBtn2.textContent = isPwd? 'Hide':'Show'; if(eyeIcon){ eyeIcon.innerHTML = isPwd ? '<path fill="currentColor" d="M12 5c-5 0-9.27 3.11-10.77 7.5C2.73 16.89 7 20 12 20s9.27-3.11 10.77-7.5C21.27 8.11 17 5 12 5Zm0 12a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z"/>' : '<path fill="currentColor" d="M3.53 2.47 2.47 3.53 6.2 7.26C3.95 8.55 2.29 10.34 1.23 12.5 2.73 16.89 7 20 12 20c2.26 0 4.36-.6 6.14-1.64l3.33 3.33 1.06-1.06L3.53 2.47ZM12 7a5 5 0 0 1 5 5c0 .54-.09 1.05-.25 1.53l-6.28-6.28C11 7.09 11.49 7 12 7Z"/>' }
+    }
+    eyeBtn?.addEventListener('click', togglePwd);
+    eyeBtn2?.addEventListener('click', togglePwd);
+</script>
+
+<script src="./js/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RentoVerse | Home</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Inter","ui-sans-serif","system-ui","-apple-system"] },
+          colors: {
+            brand: {50:"#eef6ff",100:"#d9eaff",200:"#b6d7ff",300:"#89bdff",400:"#5aa0ff",500:"#347fff",600:"#1f63f0",700:"#194ec3",800:"#173f98",900:"#132f70"}
+          },
+          boxShadow: { soft: "0 8px 30px rgba(0,0,0,0.08)" }
+        }
+      },
+      darkMode: "class"
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-to-b from-slate-50 to-blue-50 text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100 min-h-screen">
+
+<!-- ============== NAVBAR ============== -->
+<header class="sticky top-0 z-50">
+  <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mt-3 mb-3 rounded-2xl border border-white/20 bg-white/70 dark:bg-slate-900/60 backdrop-blur shadow-soft">
+      <div class="flex items-center justify-between px-4 py-3">
+        <!-- Left: Logo -->
+        <a href="#" class="flex items-center gap-2">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-indigo-500 text-white shadow">🏠</span>
+          <span class="text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-brand-700 to-indigo-600">RentoVerse</span>
+        </a>
+
+        <!-- Center: Links (Payment after Features) -->
+        <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+          <button type="button" data-open-modal="#modal-how" class="hover:text-brand-700 dark:hover:text-brand-300">How it Works</button>
+          <a href="#features" class="hover:text-brand-700 dark:hover:text-brand-300">Features</a>
+          <button type="button" data-open-modal="#modal-payment" class="hover:text-brand-700 dark:hover:text-brand-300">Payment</button>
+          <a href="#roles" class="hover:text-brand-700 dark:hover:text-brand-300">Get Started</a>
+        </div>
+
+        <!-- Right: Auth/Profile + Theme icon -->
+        <div class="flex items-center gap-3">
+          <!-- Injected dropdown mounts here -->
+          <div id="authProfile" class="space-x-2">
+            <a href="login.html" class="text-sm font-bold text-brand-700 hover:underline">Login</a>
+            <a href="register.html" class="text-sm font-bold text-brand-700 hover:underline">Register</a>
+          </div>
+
+          <!-- Theme icon only -->
+          <button id="themeToggle" title="Toggle theme" aria-label="Toggle theme"
+                  class="hidden sm:inline-flex rounded-full p-2 border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 transition">🌗</button>
+
+          <!-- Mobile menu button -->
+          <button id="menuBtn" class="md:hidden ml-1 inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 p-2 hover:bg-white dark:hover:bg-slate-800" aria-label="Open Menu">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile dropdown -->
+      <div id="mobileMenu" class="hidden border-t border-white/40 dark:border-slate-700/40 px-4 py-3 md:hidden">
+        <div class="flex flex-col gap-3 text-sm font-medium">
+          <button type="button" data-open-modal="#modal-how" class="text-left hover:text-brand-700 dark:hover:text-brand-300">How it Works</button>
+          <a href="#features" class="hover:text-brand-700 dark:hover:text-brand-300">Features</a>
+          <button type="button" data-open-modal="#modal-payment" class="text-left hover:text-brand-700 dark:hover:text-brand-300">Payment</button>
+          <a href="#roles" class="hover:text-brand-700 dark:hover:text-brand-300">Get Started</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- ============== HERO ============== -->
+<section class="relative min-h-[86vh] flex items-center justify-center overflow-hidden">
+  <img src="https://images.unsplash.com/photo-1572120360610-d971b9d7767c" alt="Hero bg" class="absolute inset-0 h-full w-full object-cover" />
+  <div class="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-slate-900/55 to-slate-900/70"></div>
+
+  <div class="relative z-10 w-full max-w-5xl px-6 text-center text-white">
+    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
+      Find Your Perfect <span class="bg-clip-text text-transparent bg-gradient-to-r from-sky-300 via-blue-300 to-indigo-300">Room Today</span>
+    </h1>
+    <p class="mt-4 text-lg md:text-xl text-white/90">Connect with trusted room providers and find your ideal living space. Safe, verified, and hassle-free room booking.</p>
+
+    <!-- Search Card -->
+    <div class="mt-10 mx-auto max-w-3xl rounded-2xl bg-white/90 backdrop-blur border border-white/30 p-4 sm:p-6 shadow-2xl text-left">
+      <form class="space-y-4" id="heroSearchForm">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label for="location" class="block text-sm font-semibold text-slate-700 mb-1">Location</label>
+            <input id="location" type="text" placeholder="Enter city, neighborhood..." class="w-full rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none px-4 py-3 text-slate-900 shadow-sm" />
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full h-[46px] rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-semibold shadow-soft transition active:scale-[.99] flex items-center justify-center gap-2">
+              <span>🔍</span>
+              <span>Search Properties</span>
+            </button>
+          </div>
+        </div>
+      </form>
+      <!-- Quick chips -->
+      <div class="mt-3 flex flex-wrap gap-2 text-xs">
+        <button data-quick="Dhanmondi" class="rounded-full border border-slate-200 px-3 py-1 bg-white text-slate-700 hover:border-brand-300">Dhanmondi</button>
+        <button data-quick="Uttara" class="rounded-full border border-slate-200 px-3 py-1 bg-white text-slate-700 hover:border-brand-300">Uttara</button>
+        <button data-quick="Mirpur" class="rounded-full border border-slate-200 px-3 py-1 bg-white text-slate-700 hover:border-brand-300">Mirpur</button>
+        <button data-quick="Banani" class="rounded-full border border-slate-200 px-3 py-1 bg-white text-slate-700 hover:border-brand-300">Banani</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== MODALS ============== -->
+<!-- How it Works (concise) -->
+<div id="modal-how" class="fixed inset-0 z-[60] hidden">
+  <div class="absolute inset-0 bg-black/60" data-close-modal></div>
+  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-2xl rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+      <h3 class="text-xl font-bold">📘 How RentoVerse Works</h3>
+      <button class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300" data-close-modal>✖</button>
+    </div>
+    <div class="p-5 text-sm leading-relaxed text-slate-700 dark:text-slate-300 space-y-3">
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><span class="font-semibold">Request</span> — Renters browse rooms and send a request. Status starts at <code class="px-1 rounded bg-slate-100 dark:bg-slate-800">PENDING_REQUEST</code>.</li>
+        <li><span class="font-semibold">Decision</span> — Providers approve or decline. Approval moves the booking to <code class="px-1 rounded bg-slate-100 dark:bg-slate-800">AWAITING_PAYMENT</code>.</li>
+        <li><span class="font-semibold">Deposit 25%</span> — Renter pays within 3 days (<code class="px-1 rounded bg-slate-100 dark:bg-slate-800">paymentDeadline</code>). After admin verification, the booking becomes <code class="px-1 rounded bg-slate-100 dark:bg-slate-800">CONFIRMED</code>.</li>
+        <li><span class="font-semibold">Visit & Decide</span> — Within the viewing window, renter either <em>Confirm Completion</em> or <em>Request Refund</em>.</li>
+        <li><span class="font-semibold">Finalize</span> — Admin completes or refunds. Once completed, the provider can request their 25% payout.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Payment (bKash/Nagad/Rocket only) -->
+<div id="modal-payment" class="fixed inset-0 z-[60] hidden">
+  <div class="absolute inset-0 bg-black/60" data-close-modal></div>
+  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-2xl rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+      <h3 class="text-xl font-bold">💳 Payment (bKash · Nagad · Rocket)</h3>
+      <button class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300" data-close-modal>✖</button>
+    </div>
+    <div class="p-5 text-sm leading-relaxed text-slate-700 dark:text-slate-300 space-y-3">
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Deposit 25%</strong> — Pay securely via bKash, Nagad or Rocket. Admin verifies the deposit and the booking moves to <em>CONFIRMED</em>.</li>
+        <li><strong>Viewing & Decision</strong> — Visit the room, then choose <em>Confirm Completion</em> or <em>Request Refund</em>.</li>
+        <li><strong>Provider Payout</strong> — After completion, the provider requests their 25% payout. Admin processes and notifies.</li>
+      </ul>
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-800 p-3 bg-slate-50 dark:bg-slate-800/50 text-xs">
+        <div class="font-semibold mb-1">RentoVerse is a trusted, professional platform—payments are secure and auditable.</div>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-2 py-1 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">bKash</span>
+          <span class="px-2 py-1 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">Nagad</span>
+          <span class="px-2 py-1 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">Rocket</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== ROLES (Get Started) ============== -->
+<section id="roles" class="py-20 bg-gradient-to-b from-white to-blue-50/60 dark:from-slate-900 dark:to-slate-900/40">
+  <div class="max-w-7xl mx-auto px-6 text-center">
+    <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">Choose Your Role</h2>
+    <p class="mt-2 text-slate-600 dark:text-slate-300">Whether you're looking for a room or want to rent out your space—start here.</p>
+
+    <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Renter -->
+      <div class="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 shadow-soft text-center hover:-translate-y-0.5 hover:shadow-xl transition">
+        <div class="text-4xl mb-3 mx-auto w-fit">🏠</div>
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">I'm Looking for a Room</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Find and book your perfect room from verified providers</p>
+        <ul class="mt-4 text-sm text-slate-600 dark:text-slate-300 space-y-1 text-left inline-block mx-auto">
+          <li>• Browse available rooms</li>
+          <li>• Send booking requests</li>
+        </ul>
+        <a href="all-available-rooms.html"
+           class="mt-5 block mx-auto w-fit rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 px-4 py-2 text-white font-semibold hover:from-brand-700 hover:to-indigo-700">
+          Find Rooms →
+        </a>
+      </div>
+
+      <!-- Provider -->
+      <div class="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 shadow-soft text-center hover:-translate-y-0.5 hover:shadow-xl transition">
+        <div class="text-4xl mb-3 mx-auto w-fit">🔑</div>
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">I Want to Rent Out My Room</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">List your rooms and connect with verified renters</p>
+        <ul class="mt-4 text-sm text-slate-600 dark:text-slate-300 space-y-1 text-left inline-block mx-auto">
+          <li>• Post room listings</li>
+          <li>• Manage booking requests</li>
+          <li>• Set your own rates</li>
+        </ul>
+        <button onclick="window.location.href='all-posted-rooms.html'"
+                class="mt-5 block mx-auto w-fit rounded-xl border border-orange-300 bg-gradient-to-r from-orange-500 to-amber-500 px-4 py-2 text-white font-bold hover:from-orange-600 hover:to-amber-600">
+          List Your Room →
+        </button>
+      </div>
+
+      <!-- Support -->
+      <div class="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 shadow-soft text-center hover:-translate-y-0.5 hover:shadow-xl transition">
+        <div class="text-4xl mb-3 mx-auto w-fit">📞</div>
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Support & Reports</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Get help, submit issues, and view platform reports</p>
+        <ul class="mt-4 text-sm text-slate-600 dark:text-slate-300 space-y-1 text-left inline-block mx-auto">
+          <li>• Contact our support team</li>
+          <li>• Submit bug or issue reports</li>
+          <li>• View platform activity reports</li>
+        </ul>
+        <button onclick="window.location.href='Support.html'"
+                class="mt-5 block mx-auto w-fit rounded-xl bg-gradient-to-r from-sky-600 to-cyan-600 px-4 py-2 text-white font-semibold hover:from-sky-700 hover:to-cyan-700">
+          Support Access →
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FEATURES ============== -->
+<section id="features" class="py-20 bg-white dark:bg-slate-900">
+  <div class="max-w-7xl mx-auto px-6">
+    <h2 class="text-center text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">Why Choose RentoVerse?</h2>
+    <p class="mt-2 text-center text-slate-600 dark:text-slate-300">Built with safety, convenience and trust at the core.</p>
+
+    <div class="mt-10 grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="group p-6 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft transition hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-brand-200 dark:hover:ring-slate-700">
+        <div class="text-2xl mb-3 mx-auto w-fit transition-transform duration-300 group-hover:scale-110">🛡️</div>
+        <h4 class="font-bold mb-1 text-slate-900 dark:text-slate-100">Secure & Verified</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Email confirmation & identity checks ensure safety.</p>
+      </div>
+
+      <div class="group p-6 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft transition hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-brand-200 dark:hover:ring-slate-700">
+        <div class="text-2xl mb-3 mx-auto w-fit transition-transform duration-300 group-hover:scale-110">🤖</div>
+        <h4 class="font-bold mb-1 text-slate-900 dark:text-slate-100">RentoBot</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Your AI assistant to answer questions and guide booking.</p>
+      </div>
+
+      <div class="group p-6 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft transition hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-brand-200 dark:hover:ring-slate-700">
+        <div class="text-2xl mb-3 mx-auto w-fit transition-transform duration-300 group-hover:scale-110">⚡</div>
+        <h4 class="font-bold mb-1 text-slate-900 dark:text-slate-100">Instant Booking</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Fast request approvals with live updates.</p>
+      </div>
+
+      <div class="group p-6 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft transition hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-brand-200 dark:hover:ring-slate-700">
+        <div class="text-2xl mb-3 mx-auto w-fit transition-transform duration-300 group-hover:scale-110">📍</div>
+        <h4 class="font-bold mb-1 text-slate-900 dark:text-slate-100">Location Search</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Neighborhood-level discovery that saves time.</p>
+      </div>
+
+      <div class="group p-6 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft transition hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-brand-200 dark:hover:ring-slate-700">
+        <div class="text-2xl mb-3 mx-auto w-fit transition-transform duration-300 group-hover:scale-110">📋</div>
+        <h4 class="font-bold mb-1 text-slate-900 dark:text-slate-100">Easy Management</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Provider dashboard to manage listings & bookings.</p>
+      </div>
+
+      <div class="group p-6 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft transition hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-brand-200 dark:hover:ring-slate-700">
+        <div class="text-2xl mb-3 mx-auto w-fit transition-transform duration-300 group-hover:scale-110">💳</div>
+        <h4 class="font-bold mb-1 text-slate-900 dark:text-slate-100">Local Payments</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-300">bKash, Nagad, and Rocket supported.</p>
+      </div>
+
+      <div class="group p-6 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft transition hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-brand-200 dark:hover:ring-slate-700">
+        <div class="text-2xl mb-3 mx-auto w-fit transition-transform duration-300 group-hover:scale-110">🤝</div>
+        <h4 class="font-bold mb-1 text-slate-900 dark:text-slate-100">Responsive Support</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Get help quickly via Support & Reports.</p>
+      </div>
+
+      <div class="group p-6 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft transition hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-brand-200 dark:hover:ring-slate-700">
+        <div class="text-2xl mb-3 mx-auto w-fit transition-transform duration-300 group-hover:scale-110">👥</div>
+        <h4 class="font-bold mb-1 text-slate-900 dark:text-slate-100">Community Driven</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Built from feedback with features users love.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer class="border-t border-slate-200/60 dark:border-slate-800/60 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-900">
+  <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm text-slate-600 dark:text-slate-300">
+    <div>
+      <h3 class="font-bold text-slate-900 dark:text-white mb-2">🏠 RentoVerse</h3>
+      <p>Your trusted platform for finding and renting rooms. Safe, secure, and simple for everyone.</p>
+    </div>
+    <div>
+      <h4 class="font-bold text-slate-900 dark:text-white mb-2">Quick Links</h4>
+      <ul class="space-y-1">
+        <li><button type="button" data-open-modal="#modal-how" class="hover:underline">How It Works</button></li>
+        <li><a href="#features" class="hover:underline">Features</a></li>
+        <li><a href="#roles" class="hover:underline">Get Started</a></li>
+        <li><button type="button" data-open-modal="#modal-payment" class="hover:underline">Payment</button></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold text-slate-900 dark:text-white mb-2">Support</h4>
+      <ul class="space-y-1">
+        <li><a href="Support.html" class="hover:underline">Help Center</a></li>
+        <li><a href="#" class="hover:underline">Safety Guidelines</a></li>
+        <li><a href="#" class="hover:underline">Terms of Service</a></li>
+        <li><a href="#" class="hover:underline">Privacy Policy</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold text-slate-900 dark:text-white mb-2">Contact Us</h4>
+      <ul class="space-y-1">
+        <li>📧 contact.rentoverse@gmail.com</li>
+        <li>📞 01314-939368</li>
+        <li>📍 Available Dhaka</li>
+      </ul>
+    </div>
+  </div>
+  <div class="text-center text-xs text-slate-500 dark:text-slate-400 pb-8">© 2025 RentoVerse. Built with ❤️ for the community.</div>
+</footer>
+
+<!-- RentoBot Trigger Button -->
+<div id="rentobot-toggle" class="fixed bottom-6 right-6 z-50">
+  <button onclick="toggleRentoBot()" class="shadow-soft bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white px-4 py-3 rounded-full">💬 Chat with RentoBot</button>
+</div>
+
+<!-- RentoBot Chat Box -->
+<div id="rentobot-box" class="fixed bottom-24 right-6 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-4 hidden z-50">
+  <div class="flex items-center justify-between mb-3">
+    <div class="text-sm font-semibold">🤖 RentoBot</div>
+    <button onclick="toggleRentoBot()" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">✖</button>
+  </div>
+  <div id="rentobot-messages" class="h-56 overflow-y-auto text-sm border border-slate-200 dark:border-slate-800 rounded p-2 bg-slate-50 dark:bg-slate-800 mb-3"></div>
+  <div class="flex gap-2">
+    <input id="rentobot-input" type="text" class="flex-1 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-sm focus:outline-none bg-white dark:bg-slate-900" placeholder="Ask something... (e.g., How to book?)" />
+    <button id="rentobot-send" class="bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white px-3 py-2 rounded text-sm">Send</button>
+  </div>
+</div>
+
+<!-- ============== SCRIPTS ============== -->
+<script src="js/rentobot.js"></script>
+
+<!-- Premium profile dropdown (JS injects into #authProfile) -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const name  = localStorage.getItem("name");
+    const email = localStorage.getItem("email");
+    const role  = localStorage.getItem("role");
+    const authProfile = document.getElementById("authProfile");
+
+    if (name && email && role && authProfile) {
+      const dashboardPage = role === "PROVIDER" ? "provider-dashboard.html" : "renter-dashboard.html";
+      const initials = name.split(" ").filter(Boolean).map(n => n[0]).slice(0,2).join("").toUpperCase();
+
+      authProfile.innerHTML = `
+        <div class="relative">
+          <button id="userMenuBtn" type="button"
+            class="flex items-center gap-3 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700
+                   bg-white/80 dark:bg-slate-900/70 hover:bg-white dark:hover:bg-slate-800 shadow-sm transition">
+            <div class="h-9 w-9 rounded-full bg-gradient-to-br from-brand-600 to-indigo-600 text-white grid place-items-center text-xs font-semibold">${initials}</div>
+            <div class="text-left leading-tight">
+              <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">${name}</p>
+              <p class="text-xs text-slate-500 max-w-[160px] sm:max-w-[220px] truncate">${email}</p>
+            </div>
+            <svg id="userMenuChevron" class="h-4 w-4 text-slate-500 transition-transform" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+
+          <div id="userMenu"
+               class="invisible opacity-0 scale-95 pointer-events-none absolute right-0 mt-2 w-64
+                      rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900
+                      shadow-xl ring-1 ring-black/5 transition">
+            <div class="p-1">
+              <a href="${dashboardPage}" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800">
+                <span class="text-slate-500">📂</span>
+                <div>
+                  <p class="text-sm font-medium text-slate-900 dark:text-slate-100">View Dashboard</p>
+                  <p class="text-xs text-slate-500">Go to your ${role === "PROVIDER" ? "Provider" : "Renter"} panel</p>
+                </div>
+              </a>
+
+              <div class="my-1 h-px bg-slate-100 dark:bg-slate-800"></div>
+
+              <button type="button" onclick="logout()" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20">
+                <span class="text-rose-500">🚪</span>
+                <span class="text-sm font-medium text-rose-600">Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const btn = document.getElementById("userMenuBtn");
+      const menu = document.getElementById("userMenu");
+      const chev = document.getElementById("userMenuChevron");
+
+      function setMenu(open) {
+        menu.classList.toggle("invisible", !open);
+        menu.classList.toggle("opacity-0", !open);
+        menu.classList.toggle("scale-95", !open);
+        menu.classList.toggle("pointer-events-none", !open);
+        menu.classList.toggle("visible", open);
+        menu.classList.toggle("opacity-100", open);
+        menu.classList.toggle("scale-100", open);
+        menu.classList.toggle("pointer-events-auto", open);
+        chev.classList.toggle("rotate-180", open);
+      }
+
+      let open = false;
+      btn.addEventListener("click", (e) => { e.stopPropagation(); open = !open; setMenu(open); });
+      document.addEventListener("click", (e) => {
+        if (!open) return;
+        const inside = btn.contains(e.target) || menu.contains(e.target);
+        if (!inside) { open = false; setMenu(false); }
+      });
+      window.addEventListener("keydown", (e) => { if (e.key === "Escape" && open) { open = false; setMenu(false); } });
+    }
+  });
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+  }
+</script>
+
+<script>
+  // Mobile menu toggle
+  const menuBtn = document.getElementById('menuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  menuBtn?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+  // Theme toggle (persist + icon change)
+  const themeToggle = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') { root.classList.add('dark'); themeToggle.textContent = '🌞'; }
+  themeToggle?.addEventListener('click', () => {
+    const isDark = root.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    themeToggle.textContent = isDark ? '🌞' : '🌗';
+  });
+
+  // Quick chips fill location
+  document.querySelectorAll('[data-quick]')?.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const val = chip.getAttribute('data-quick');
+      const loc = document.getElementById('location');
+      if (loc) loc.value = val;
+    });
+  });
+
+  // Modal helpers
+  function openModal(sel){document.querySelector(sel)?.classList.remove('hidden')}
+  document.querySelectorAll('[data-open-modal]')?.forEach(btn=>{
+    btn.addEventListener('click',()=>{ openModal(btn.getAttribute('data-open-modal')) })
+  })
+  document.querySelectorAll('[data-close-modal]')?.forEach(btn=>{
+    btn.addEventListener('click',()=>{ btn.closest('.fixed')?.classList.add('hidden') })
+  })
+  window.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ document.querySelectorAll('#modal-how,#modal-payment').forEach(m=>m.classList.add('hidden')) }
+  });
+
+  // Fallback if rentobot.js doesn’t define toggleRentoBot
+  window.toggleRentoBot = window.toggleRentoBot || function () {
+    const box = document.getElementById('rentobot-box');
+    if (box) box.classList.toggle('hidden');
+  }
+</script>
+
+<!-- Keep at end so search.js hooks run -->
+<script src="js/search.js"></script>
+</body>
+</html>

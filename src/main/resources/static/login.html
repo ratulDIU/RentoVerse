@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | RentoVerse</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    html, body { height: 100%; }
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans"; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-100 via-sky-100 to-purple-100 px-4">
+
+<header class="fixed inset-x-0 top-0 z-50 bg-blue-500 text-white shadow-md ring-1 ring-pink-700/20">
+  <nav class="mx-auto max-w-6xl px-4">
+    <div class="flex h-14 items-center justify-between">
+      <!-- Left: Home -->
+      <a href="/index.html" class="inline-flex items-center gap-2 font-bold hover:text-indigo-200 transition">
+        <img src="https://img.icons8.com/fluency/48/home.png" alt="Home" class="w-5 h-5"/>
+        <span>Home</span>
+      </a>
+
+      <!-- Center: navigation links -->
+      <ul class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <li><a href="/all-available-rooms.html" class="hover:text-indigo-200 transition">Rooms</a></li>
+        <li><a href="/all-posted-rooms.html" class="hover:text-indigo-200 transition">Post Room</a></li>
+        <li><a href="/support.html" class="hover:text-indigo-200 transition">Support Ticket</a></li>
+      </ul>
+
+      <!-- Right: auth buttons -->
+      <div class="flex items-center gap-2">
+        <a href="/login.html"class="rounded-lg bg-gradient-to-r from-indigo-600 to-green-500 px-3.5 py-1.5 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400 transition">Log in</a>
+        <a href="/register.html" class="rounded-lg bg-gradient-to-r from-indigo-600 to-green-500 px-3.5 py-1.5 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400 transition">register</a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+
+<!-- Main (unchanged except width) -->
+<main class="w-full max-w-xl mx-auto flex items-center justify-center min-h-screen pt-20">
+  <section class="w-full max-w-l rounded-2xl bg-gradient-to-br from-white to-indigo-50 shadow-lg ring-1 ring-slate-200 p-8">
+    <!-- Brand -->
+    <a href="/index.html" class="mx-auto mb-4 flex w-max items-center gap-2">
+      <img src="https://img.icons8.com/fluency/48/home.png" alt="Logo" class="w-6 h-6" />
+      <span class="text-lg font-extrabold tracking-tight" style="color:#1E56E5">RentoVerse</span>
+    </a>
+
+    <h2 class="text-2xl font-extrabold text-center text-slate-900 mb-6">Welcome back <span aria-hidden>👋</span></h2>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="space-y-6">
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
+        <input type="email" id="email" required class="mt-1 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20" />
+      </div>
+
+      <!-- Password -->
+      <div>
+        <div class="flex items-center justify-between">
+          <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
+          <div class="flex items-center gap-4">
+            <a href="/forgot-password.html" class="text-xs font-medium text-indigo-700 hover:text-indigo-900">Forgot password?</a>
+          </div>
+        </div>
+        <div class="relative mt-1">
+          <input type="password" id="password" required class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 pr-12 text-slate-900 placeholder-slate-400 shadow-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20" />
+          <button type="button" id="pwdEye" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-md hover:bg-slate-100 focus:outline-none" aria-label="Toggle password visibility">
+            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-5 w-5 text-slate-500"><path fill="currentColor" d="M12 5c-5 0-9.27 3.11-10.77 7.5C2.73 16.89 7 20 12 20s9.27-3.11 10.77-7.5C21.27 8.11 17 5 12 5Zm0 12a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button id="loginBtn" type="submit" class="group relative inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/30">
+        <span>🔐 Login</span>
+        <svg class="h-4 w-4 opacity-90 group-hover:translate-x-0.5 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </button>
+    </form>
+
+    <!-- Inline Response Message -->
+    <p id="responseMessage" class="text-center text-sm font-medium mt-4"></p>
+
+    <!-- Signup Link -->
+    <p class="text-center text-sm text-slate-600 mt-6">
+      Don’t have an account?
+      <a href="/register.html" class="text-indigo-700 font-medium hover:text-indigo-900">Sign Up</a>
+    </p>
+  </section>
+</main>
+
+<script>
+  (function () {
+    const pwd = document.getElementById('password');
+    const toggleTextBtn = document.getElementById('togglePwd');
+    const eyeBtn = document.getElementById('pwdEye');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    function setEye(open) {
+      if (!eyeIcon) return;
+      eyeIcon.innerHTML = open
+              ? '<path fill="currentColor" d="M12 5c-5 0-9.27 3.11-10.77 7.5C2.73 16.89 7 20 12 20s9.27-3.11 10.77-7.5C21.27 8.11 17 5 12 5Zm0 12a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z"/>'
+              : '<path fill="currentColor" d="M3.53 2.47 2.47 3.53 6.2 7.26C3.95 8.55 2.29 10.34 1.23 12.5 2.73 16.89 7 20 12 20c2.26 0 4.36-.6 6.14-1.64l 3.33 3.33 1.06-1.06L3.53 2.47ZM12 7a 5 5 0 0 1 5 5c0 .54-.09 1.05-.25 1.53l-6.28-6.28C11 7.09 11.49 7 12 7Z"/>';
+    }
+
+    function toggle() {
+      const toText = pwd.type === 'password';
+      pwd.type = toText ? 'text' : 'password';
+      if (toggleTextBtn) toggleTextBtn.textContent = toText ? 'Hide' : 'Show';
+      setEye(!toText);
+    }
+
+    toggleTextBtn?.addEventListener('click', toggle);
+    eyeBtn?.addEventListener('click', toggle);
+  })();
+
+  document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const message = document.getElementById('responseMessage');
+    const btn = document.getElementById('loginBtn');
+    message.textContent = '';
+    message.className = 'text-center text-sm font-medium mt-4';
+
+    try {
+      btn.disabled = true; btn.classList.add('opacity-60','cursor-not-allowed');
+      const res = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const resultText = await res.text();
+      if (!res.ok) {
+        message.textContent = '❌ ' + (resultText || 'Login failed');
+        message.classList.add('text-rose-600');
+        return;
+      }
+
+      const data = JSON.parse(resultText);
+      localStorage.setItem('name', data.name);
+      localStorage.setItem('email', data.email);
+      localStorage.setItem('role', data.role);
+      localStorage.setItem('password', data.password); // consider removing later
+
+      const role = data.role;
+      if (role === 'RENTER') {
+        window.location.href = '/renter-dashboard.html';
+      } else if (role === 'PROVIDER') {
+        window.location.href = '/provider-dashboard.html';
+      } else if (role === 'ADMIN') {
+        window.location.href = '/admin-dashboard.html';
+      } else {
+        message.textContent = '❌ Unknown role: ' + role;
+        message.classList.add('text-rose-600');
+      }
+    } catch (err) {
+      console.error('Login error', err);
+      message.textContent = '❌ Something went wrong. Try again later.';
+      message.classList.add('text-rose-600');
+    } finally {
+      btn.disabled = false; btn.classList.remove('opacity-60','cursor-not-allowed');
+    }
+  });
+</script>
+</body>
+</html>

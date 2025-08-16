@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin | RentoVerse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+<div class="max-w-3xl mx-auto px-6 py-10 space-y-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <a href="index.html" class="text-blue-600 hover:underline font-semibold">← Back to Home</a>
+        <h1 class="text-2xl font-bold">Admin Panel</h1>
+        <span class="text-xs text-gray-500">v1</span>
+    </div>
+
+    <!-- Card: Confirm Deposit by Booking ID -->
+    <div class="bg-white rounded-xl shadow p-6 space-y-4">
+        <h2 class="text-lg font-semibold">✅ Confirm 25% Deposit</h2>
+        <p class="text-sm text-gray-600">
+            Approve হওয়া বুকিং-এর <strong>Booking ID</strong> দিন। এই বাটন চাপলে status
+            <code class="bg-gray-100 px-1 rounded">PAID_CONFIRMED</code> হবে।
+        </p>
+
+        <div class="flex gap-3 items-center">
+            <input id="bookingIdInput" type="number" placeholder="Booking ID"
+                   class="border rounded px-3 py-2 w-44">
+            <button onclick="markDepositPaid()"
+                    class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded">
+                Mark Deposit Paid
+            </button>
+        </div>
+
+        <div id="confirmMsg" class="text-sm mt-2"></div>
+    </div>
+
+    <!-- Card: Find Awaiting-Payment by Renter Email (optional helper) -->
+    <div class="bg-white rounded-xl shadow p-6 space-y-4">
+        <h2 class="text-lg font-semibold">🔎 Find Awaiting-Payment (by Renter Email)</h2>
+        <p class="text-sm text-gray-600">
+            Renter email দিলে তার <strong>AWAITING_PAYMENT</strong> বুকিংগুলো দেখাবে—সেখান থেকে Booking ID নিয়ে উপরের বাটন দিয়ে confirm করুন।
+        </p>
+
+        <div class="flex gap-3 items-center">
+            <input id="renterEmailInput" type="email" placeholder="renter@example.com"
+                   class="border rounded px-3 py-2 w-72">
+            <button onclick="listAwaitingByRenter()"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded">
+                Search
+            </button>
+        </div>
+
+        <div id="awaitingList" class="mt-4 space-y-3"></div>
+    </div>
+
+    <!-- Footer -->
+    <p class="text-center text-xs text-gray-400">© 2025 RentoVerse — Admin utilities</p>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin Panel | RentoVerse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Light pastel animated gradient background (only colors changed) */
+        body {
+            min-height: 100vh;
+            /* soft sky → mint → lilac → blush */
+            background: linear-gradient(-45deg, #e6f2ff, #e9fff7, #f2ecff, #fff0f6);
+            background-size: 400% 400%;
+            animation: gradientShift 22s ease infinite;
+        }
+        @keyframes gradientShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+
+</head>
+<body class="text-gray-900">
+
+<!-- Navbar -->
+<header class="bg-gradient-to-r from-emerald-700 to-teal-500 shadow">
+    <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white relative">
+
+        <!-- Left: Home button -->
+        <a href="index.html"
+           class="flex items-center gap-2 bg-white text-emerald-700 hover:bg-gray-100 px-4 py-2 rounded-lg font-semibold shadow transition">
+            🏠 <span>Home</span>
+        </a>
+
+        <!-- Center: Title -->
+        <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+            🛡 <span>RentoVerse Admin Panel</span>
+        </h1>
+
+        <!-- Right: Admin info -->
+        <div id="adminInfo" class="relative hidden">
+            <div id="adminToggle" class="flex items-center gap-3 justify-end cursor-pointer select-none">
+                <div class="text-right leading-tight">
+                    <p id="adminName" class="font-bold text-white">Admin Name</p>
+                    <p id="adminEmail" class="font-semibold text-gray-100 text-sm">admin@example.com</p>
+                </div>
+                <div class="text-white text-sm">▾</div>
+            </div>
+
+            <!-- Dropdown -->
+            <div id="adminDropdown"
+                 class="absolute right-0 mt-2 w-56 bg-white shadow-lg rounded-lg py-2 text-sm text-gray-700 hidden">
+                <a href="admin-support.html" class="block px-4 py-2 hover:bg-gray-100">📩 Support Tickets</a>
+                <a href="admin-payments.html" class="block px-4 py-2 hover:bg-gray-100">💳 Admin Payments</a>
+                <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">🚪 Logout</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Page content -->
+<div class="max-w-7xl mx-auto px-6 py-10">
+    <!-- Summary cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8 mb-10 text-center">
+        <div class="bg-white shadow rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-gray-500">Renters</h2>
+            <p id="renterCount" class="text-2xl font-bold text-blue-600">--</p>
+        </div>
+        <div class="bg-white shadow rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-gray-500">Providers</h2>
+            <p id="providerCount" class="text-2xl font-bold text-indigo-600">--</p>
+        </div>
+        <div class="bg-white shadow rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-gray-500">Rooms</h2>
+            <p id="roomCount" class="text-2xl font-bold text-orange-500">--</p>
+        </div>
+        <div class="bg-white shadow rounded-xl p-6">
+            <h2 class="text-sm font-semibold text-gray-500">Bookings</h2>
+            <p id="bookingCount" class="text-2xl font-bold text-green-600">--</p>
+        </div>
+    </div>
+
+    <h2 class="text-xl font-bold text-gray-700 mb-2">👥 Renters</h2>
+    <div id="renterList" class="space-y-4 mb-8 text-sm"></div>
+
+    <h2 class="text-xl font-bold text-gray-700 mb-2">🧑‍💼 Providers</h2>
+    <div id="providerList" class="space-y-4 mb-10 text-sm"></div>
+
+    <h2 class="text-xl font-bold text-gray-700 mb-2">🏠 Rooms</h2>
+    <div id="roomList" class="space-y-4 mb-10 text-sm"></div>
+
+    <h2 class="text-xl font-bold text-gray-700 mb-2">🧾 Bookings</h2>
+    <div id="bookingList" class="space-y-4 text-sm"></div>
+</div>
+
+<script src="js/admin-dashboard.js"></script>
+<script>
+    const adminToggle = document.getElementById("adminToggle");
+    const adminDropdown = document.getElementById("adminDropdown");
+    adminToggle?.addEventListener("click", () => adminDropdown.classList.toggle("hidden"));
+    document.addEventListener("click", (e) => {
+        if (!adminToggle.contains(e.target) && !adminDropdown.contains(e.target)) {
+            adminDropdown.classList.add("hidden");
+        }
+    });
+</script>
+</body>
+</html>

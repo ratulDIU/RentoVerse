@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Admin • Support Tickets | RentoVerse</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .badge{padding:.125rem .5rem;border-radius:.375rem;font-size:.75rem;font-weight:600}
+        .badge.OPEN{background:#eef2ff;color:#3730a3}
+        .badge.IN_PROGRESS{background:#fef3c7;color:#92400e}
+        .badge.RESOLVED{background:#dcfce7;color:#065f46}
+        .badge.CLOSED{background:#f3f4f6;color:#374151}
+        .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5)}
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-900">
+
+<header class="sticky top-0 z-50 bg-gradient-to-r from-emerald-700 to-teal-500 text-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <!-- Left: Home -->
+        <a href="/index.html" class="flex items-center gap-2 font-semibold hover:opacity-90 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3.2 2.3 12.9a1 1 0 0 0 1.4 1.4L5 13v7a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-7l1.3 1.3a1 1 0 0 0 1.4-1.4L12 3.2z"/>
+            </svg>
+            <span>Home</span>
+        </a>
+
+        <!-- Right: Controls + Dropdown -->
+        <div class="flex items-center gap-2 text-sm">
+            <button id="refreshBtn" class="px-3 py-1.5 rounded-md bg-white text-emerald-700 font-semibold hover:bg-gray-100">
+                Refresh
+            </button>
+            <label class="hidden sm:inline-flex items-center gap-2">
+                <input id="autoRefresh" type="checkbox" class="accent-white">
+                Auto-refresh (30s)
+            </label>
+
+            <div class="relative ml-2">
+                <button id="adminMenuBtn"
+                        class="flex items-center gap-3 px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition">
+                    <div class="text-right leading-tight">
+                        <div id="adminName" class="text-sm font-semibold">Admin</div>
+                        <div id="adminEmail" class="text-xs opacity-80 truncate max-w-[220px]">admin@example.com</div>
+                    </div>
+                    <svg id="chev" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-80 transition-transform"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                    </svg>
+                </button>
+
+                <!-- Dropdown -->
+                <div id="adminDropdown"
+                     class="absolute right-0 mt-2 w-44 bg-white text-gray-700 border rounded-xl shadow-lg p-1 hidden">
+                    <a href="/admin-dashboard.html"
+                       class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 13h8V3H3v10Zm0 8h8v-6H3v6Zm10 0h8V11h-8v10Zm0-18v4h8V3h-8Z"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <button id="logoutBtn"
+                            class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-left text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16 17l1.41-1.41L14.83 13H21v-2h-6.17l2.58-2.59L16 7l-5 5 5 5ZM3 21h8v-2H5V5h6V3H3v18Z"/>
+                        </svg>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<main class="max-w-7xl mx-auto p-4">
+    <!-- Filters -->
+    <section class="bg-white border rounded-xl p-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div>
+                <label class="block text-sm font-medium mb-1">Status</label>
+                <select id="statusFilter" class="w-full border rounded-md px-3 py-2">
+                    <option value="">All</option>
+                    <option value="OPEN">OPEN</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="RESOLVED">RESOLVED</option>
+                    <option value="CLOSED">CLOSED</option>
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-1">Search (email or subject)</label>
+                <input id="searchInput" type="text" placeholder="e.g. user@email.com or 'Room issue'"
+                       class="w-full border rounded-md px-3 py-2">
+            </div>
+            <div class="flex items-end">
+                <button id="applyFilters" class="w-full border rounded-md px-3 py-2 hover:bg-gray-50">Apply</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Table -->
+    <section class="bg-white border rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gray-100 text-gray-700">
+                <tr>
+                    <th class="text-left px-4 py-2">ID</th>
+                    <th class="text-left px-4 py-2">Created</th>
+                    <th class="text-left px-4 py-2">Name</th>
+                    <th class="text-left px-4 py-2">Email</th>
+                    <th class="text-left px-4 py-2">Category</th>
+                    <th class="text-left px-4 py-2">Subject</th>
+                    <th class="text-left px-4 py-2">Status</th>
+                    <th class="text-left px-4 py-2">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+        <div id="tableFooter" class="border-t px-4 py-2 text-xs text-gray-500 flex justify-between">
+            <span id="countText">0 tickets</span>
+            <span>Tip: Click “View” to read the full message</span>
+        </div>
+    </section>
+</main>
+
+<!-- View Message Modal -->
+<div id="modal" class="hidden">
+    <div class="modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-2xl w-full shadow-2xl">
+            <div class="px-5 py-3 border-b flex items-center justify-between">
+                <h3 class="font-semibold text-lg">Ticket #<span id="m_id"></span> — <span id="m_subject"></span></h3>
+                <button id="m_close" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+            </div>
+            <div class="p-5 space-y-3 text-sm">
+                <div><span class="font-medium">From:</span> <span id="m_name"></span> &lt;<span id="m_email"></span>&gt;</div>
+                <div><span class="font-medium">Category:</span> <span id="m_category"></span></div>
+                <div><span class="font-medium">Created:</span> <span id="m_created"></span></div>
+                <div><span class="font-medium">Status:</span> <span id="m_status" class="badge"></span></div>
+                <div>
+                    <div class="font-medium mb-1">Message</div>
+                    <pre id="m_message" class="whitespace-pre-wrap bg-gray-50 border rounded-lg p-3"></pre>
+                </div>
+            </div>
+            <div class="px-5 py-3 border-t flex gap-2 justify-end">
+                <select id="m_statusSelect" class="border rounded-md px-3 py-2 text-sm">
+                    <option>OPEN</option>
+                    <option>IN_PROGRESS</option>
+                    <option>RESOLVED</option>
+                    <option>CLOSED</option>
+                </select>
+                <button id="m_save" class="px-3 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 text-sm">Update Status</button>
+                <button id="m_cancel" class="px-3 py-2 rounded-md border text-sm">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    // Navbar dropdown logic + identity fill
+    (function(){
+        const aName  = localStorage.getItem('adminName') || localStorage.getItem('name')  || 'Admin';
+        const aEmail = localStorage.getItem('adminEmail')|| localStorage.getItem('email') || 'admin@example.com';
+        document.getElementById('adminName').textContent  = aName;
+        document.getElementById('adminEmail').textContent = aEmail;
+
+        const menuBtn  = document.getElementById('adminMenuBtn');
+        const dropdown = document.getElementById('adminDropdown');
+        const chev     = document.getElementById('chev');
+
+        menuBtn.addEventListener('click', () => {
+            dropdown.classList.toggle('hidden');
+            chev.classList.toggle('rotate-180');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+                chev.classList.remove('rotate-180');
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = '/login.html';
+        });
+    })();
+
+    // ====== Support Tickets logic (unchanged endpoints) ======
+    const tbody = document.getElementById('tbody');
+    const statusFilter = document.getElementById('statusFilter');
+    const searchInput = document.getElementById('searchInput');
+    const applyFilters = document.getElementById('applyFilters');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const autoRefresh = document.getElementById('autoRefresh');
+    const countText = document.getElementById('countText');
+
+    const modal = document.getElementById('modal');
+    const m_close = document.getElementById('m_close');
+    const m_cancel = document.getElementById('m_cancel');
+    const m_save = document.getElementById('m_save');
+    const m_id = document.getElementById('m_id');
+    const m_subject = document.getElementById('m_subject');
+    const m_name = document.getElementById('m_name');
+    const m_email = document.getElementById('m_email');
+    const m_category = document.getElementById('m_category');
+    const m_created = document.getElementById('m_created');
+    const m_status = document.getElementById('m_status');
+    const m_statusSelect = document.getElementById('m_statusSelect');
+    const m_message = document.getElementById('m_message');
+
+    let allTickets = [];
+    let autoTimer = null;
+
+    function badge(status) {
+        return `<span class="badge ${status}">${status}</span>`;
+    }
+
+    async function loadTickets() {
+        const q = statusFilter.value ? `?status=${encodeURIComponent(statusFilter.value)}` : '';
+        const res = await fetch(`/api/admin/support-tickets${q}`);
+        if (!res.ok) {
+            tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-6 text-center text-red-600">Failed to load (${res.status}). Check server logs.</td></tr>`;
+            countText.textContent = '0 tickets';
+            return;
+        }
+        allTickets = await res.json();
+        render();
+    }
+
+    function render() {
+        const s = searchInput.value.trim().toLowerCase();
+        const rows = allTickets.filter(t => {
+            if (!s) return true;
+            return (t.email && t.email.toLowerCase().includes(s)) ||
+                (t.subject && t.subject.toLowerCase().includes(s));
+        });
+
+        countText.textContent = `${rows.length} ticket${rows.length !== 1 ? 's' : ''}`;
+
+        if (!rows.length) {
+            tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-6 text-center text-gray-500">No tickets found.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = rows.map(t => `
+        <tr class="border-t hover:bg-gray-50">
+          <td class="px-4 py-2">${t.id}</td>
+          <td class="px-4 py-2">${t.createdAt || ''}</td>
+          <td class="px-4 py-2">${escapeHtml(t.name)}</td>
+          <td class="px-4 py-2"><a href="mailto:${t.email}" class="text-blue-600 hover:underline">${t.email}</a></td>
+          <td class="px-4 py-2">${t.category}</td>
+          <td class="px-4 py-2 max-w-[280px] truncate" title="${escapeHtml(t.subject)}">${escapeHtml(t.subject)}</td>
+          <td class="px-4 py-2">${badge(t.status)}</td>
+          <td class="px-4 py-2">
+            <div class="flex items-center gap-2">
+              <button class="px-2 py-1 rounded-md border text-xs" onclick='openModal(${JSON.stringify(t.id)})'>View</button>
+              <select class="border rounded-md px-2 py-1 text-xs" onchange="quickUpdate(${t.id}, this.value)">
+                <option selected disabled>Set status</option>
+                <option>OPEN</option>
+                <option>IN_PROGRESS</option>
+                <option>RESOLVED</option>
+                <option>CLOSED</option>
+              </select>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function escapeHtml(s){ return (s??'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+    async function quickUpdate(id, status){
+        const ok = await updateStatus(id, status);
+        if (ok) loadTickets();
+    }
+
+    async function updateStatus(id, status){
+        try{
+            const res = await fetch(`/api/admin/support-tickets/${id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+            if (!res.ok) {
+                const t = await res.text();
+                alert(`Failed to update: ${t || res.status}`);
+                return false;
+            }
+            return true;
+        }catch(e){
+            alert('Network error: ' + e.message);
+            return false;
+        }
+    }
+
+    function openModal(id){
+        const t = allTickets.find(x => x.id === id);
+        if (!t) return;
+        m_id.textContent = t.id;
+        m_subject.textContent = t.subject || '';
+        m_name.textContent = t.name || '-';
+        m_email.textContent = t.email || '-';
+        m_category.textContent = t.category || '-';
+        m_created.textContent = t.createdAt || '';
+        m_status.textContent = t.status || '-';
+        m_status.className = 'badge ' + (t.status || '');
+        m_statusSelect.value = t.status || 'OPEN';
+        m_message.textContent = t.message || '';
+        modal.classList.remove('hidden');
+    }
+
+    function closeModal(){ modal.classList.add('hidden'); }
+
+    m_close.addEventListener('click', closeModal);
+    m_cancel.addEventListener('click', closeModal);
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+    m_save.addEventListener('click', async () => {
+        const id = Number(m_id.textContent);
+        const status = m_statusSelect.value;
+        const ok = await updateStatus(id, status);
+        if (ok) {
+            closeModal();
+            loadTickets();
+        }
+    });
+
+    applyFilters.addEventListener('click', loadTickets);
+    refreshBtn.addEventListener('click', loadTickets);
+    searchInput.addEventListener('keydown', e => { if(e.key === 'Enter') loadTickets(); });
+
+    autoRefresh.addEventListener('change', () => {
+        if (autoRefresh.checked) {
+            autoTimer = setInterval(loadTickets, 30000);
+        } else {
+            clearInterval(autoTimer);
+            autoTimer = null;
+        }
+    });
+
+    // initial
+    loadTickets();
+</script>
+</body>
+</html>

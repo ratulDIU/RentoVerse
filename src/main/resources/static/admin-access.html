@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Register | RentoVerse</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            rento: {
+              50: '#eef6ff',
+              100: '#d9eaff',
+              200: '#bcd8ff',
+              300: '#91bfff',
+              400: '#5d9cff',
+              500: '#3b82f6',
+              600: '#2f6ad1',
+              700: '#2656a8',
+              800: '#1f4687',
+              900: '#1b3a70'
+            },
+            accent: '#8b5cf6'
+          },
+          boxShadow: { soft: '0 10px 30px rgba(17, 24, 39, 0.08)' }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen relative bg-white">
+
+<!-- Nav / brand -->
+<header class="relative z-10">
+  <div class="flex items-center justify-between px-6 py-3
+                bg-gradient-to-r from-emerald-700 to-teal-500
+                text-white shadow-soft">
+    <a href="/index.html" class="group inline-flex items-center gap-2 font-semibold hover:text-gray-100">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.5 19.5L3 12l7.5-7.5M3 12h18"/>
+      </svg>
+      Home
+    </a>
+    <span class="text-sm">RentoVerse Admin</span>
+  </div>
+</header>
+
+<!-- Main container -->
+<main class="relative z-10 flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-md">
+
+    <!-- Gradient BORDER wrapper (only border is colored) -->
+    <div class="rounded-2xl p-[2px] bg-gradient-to-r from-rento-500 via-indigo-500 to-accent shadow-soft">
+      <!-- Card (white inside) -->
+      <div class="rounded-2xl bg-white border border-white/70">
+        <!-- Card header -->
+        <div class="px-8 pt-8 pb-4 text-center">
+          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center
+                        rounded-2xl bg-gradient-to-br from-rento-500 to-accent
+                        text-white shadow-soft">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                 class="h-6 w-6" fill="currentColor">
+              <path d="M12 1.75a6.25 6.25 0 00-6.25 6.25v2.25H4.5A2.25 2.25 0 002.25 12.5v7.25A2.25 2.25 0 004.5 22h15a2.25 2.25 0 002.25-2.25V12.5A2.25 2.25 0 0019.5 10.25h-1.25V8A6.25 6.25 0 0012 1.75zm-4.75 6.25A4.75 4.75 0 0112 3.25 4.75 4.75 0 0116.75 8v2.25h-9.5V8z"/>
+            </svg>
+          </div>
+
+          <!-- Colorful heading -->
+          <h1 class="text-2xl font-extrabold bg-gradient-to-r from-rento-600 via-indigo-600 to-accent bg-clip-text text-transparent">
+            🔐 Admin Registration
+          </h1>
+          <div class="mx-auto mt-2 h-1.5 w-24 rounded-full bg-gradient-to-r from-rento-500 via-indigo-500 to-accent"></div>
+
+          <p class="mt-3 text-sm text-gray-500">Enter your details and the secret key to request admin access.</p>
+        </div>
+
+        <form id="adminAccessForm" class="px-8 pb-8 space-y-5">
+          <!-- Name -->
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+            <div class="mt-1 relative">
+              <input type="text" id="name" required
+                     class="peer w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-800 shadow-sm outline-none ring-0 transition placeholder:text-gray-400 focus:border-rento-500 focus:ring-2 focus:ring-rento-200" placeholder="e.g., Alex Johnson" />
+              <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-300 peer-focus:text-rento-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm-9 9.25A8.97 8.97 0 0112 14a8.97 8.97 0 019 7.25v.75H3v-.75z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <div class="mt-1 relative">
+              <input type="email" id="email" required
+                     class="peer w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-800 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-rento-500 focus:ring-2 focus:ring-rento-200" placeholder="you@example.com" />
+              <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-300 peer-focus:text-rento-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M20.25 6.75A2.25 2.25 0 0018 4.5H6a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 006 19.5h12a2.25 2.25 0 002.25-2.25V6.75zm-1.91-.75L12 10.28 5.66 6h12.68z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Password with toggle + strength -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <div class="mt-1 relative">
+              <input type="password" id="password" required
+                     class="peer w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-800 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-rento-500 focus:ring-2 focus:ring-rento-200 pr-10" placeholder="••••••••" />
+              <button type="button" id="togglePwd" aria-label="Show password" class="absolute inset-y-0 right-2.5 my-auto inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-400 hover:text-gray-600 focus-visible:outline-none">
+                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 11a4 4 0 110-8 4 4 0 010 8z"/></svg>
+              </button>
+            </div>
+            <div class="mt-2 grid grid-cols-4 gap-1">
+              <span class="h-1 rounded bg-gray-200" id="bar1"></span>
+              <span class="h-1 rounded bg-gray-200" id="bar2"></span>
+              <span class="h-1 rounded bg-gray-200" id="bar3"></span>
+              <span class="h-1 rounded bg-gray-200" id="bar4"></span>
+            </div>
+            <p id="pwdHint" class="mt-1 text-xs text-gray-500">Use 8+ chars with letters, numbers & symbols.</p>
+          </div>
+
+          <!-- Secret Key -->
+          <div>
+            <label for="secretKey" class="block text-sm font-medium text-gray-700">Secret Key</label>
+            <div class="mt-1 relative">
+              <input type="text" id="secretKey" required
+                     class="peer w-full rounded-lg border-2 border-gray-300 bg-white px-4 py-2.5 text-gray-800 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-red-400 focus:ring-2 focus:ring-red-200" placeholder="Enter admin secret" />
+              <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-300 peer-focus:text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 100 18 9 9 0 000-18zm.75 4.5a.75.75 0 10-1.5 0v5.25c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V7.5z"/></svg>
+              </div>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Provided by system owner. Keep it confidential.</p>
+          </div>
+
+          <button type="submit" id="submitBtn"
+                  class="w-full rounded-lg bg-gradient-to-r from-rento-500 via-indigo-500 to-accent py-2.5 font-semibold text-white shadow-soft transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-rento-300">
+            Register as Admin
+          </button>
+
+          <p id="successMessage" class="hidden text-sm text-green-600 mt-3 text-center">
+            ✅ Registration successful! Please check your email for verification.
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <p class="mt-6 text-center text-xs text-gray-400">By registering, you agree to follow RentoVerse admin policies.</p>
+  </div>
+</main>
+
+<!-- FRONTEND-ONLY helpers -->
+<script>
+  const pwd = document.getElementById('password');
+  const toggle = document.getElementById('togglePwd');
+  const eyeIcon = document.getElementById('eyeIcon');
+  toggle?.addEventListener('click', () => {
+    const isHidden = pwd.type === 'password';
+    pwd.type = isHidden ? 'text' : 'password';
+    eyeIcon.innerHTML = isHidden
+            ? '<path d="M2 12s3-7 10-7c2.61 0 4.71.94 6.28 2.12L20.59 5.8 22 7.21l-2.01 2.01C21.17 10.65 22 12 22 12s-3 7-10 7c-2.6 0-4.7-.93-6.27-2.1L3.4 18.2 2 16.79l2.02-2.01A12.42 12.42 0 012 12zm10 4a4 4 0 100-8 4 4 0 000 8z" />'
+            : '<path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 11a4 4 0 110-8 4 4 0 010 8z" />';
+  });
+
+  const bars = [bar1, bar2, bar3, bar4];
+  const hint = document.getElementById('pwdHint');
+  function score(p){ let s=0; if(p.length>=8)s++; if(/[A-Z]/.test(p))s++; if(/[0-9]/.test(p))s++; if(/[^A-Za-z0-9]/.test(p))s++; return s; }
+  pwd?.addEventListener('input', e=>{
+    const s=score(e.target.value);
+    bars.forEach((b,i)=>{
+      if(i<s){
+        b.className = s<4
+                ? 'h-1 rounded bg-gradient-to-r from-orange-400 to-pink-500'
+                : 'h-1 rounded bg-gradient-to-r from-emerald-400 via-teal-500 to-green-600 shadow';
+      } else b.className='h-1 rounded bg-gray-200';
+    });
+    const labels=['Very weak','Weak','Okay','Good','Strong'];
+    hint.textContent = s>=4?'Strong password ✔': labels[s]+' — use 8+ chars with letters, numbers & symbols.';
+    hint.className = 'mt-1 text-xs ' + (s>=3?'text-emerald-600 font-medium':'text-gray-500');
+  });
+
+  const form = document.getElementById('adminAccessForm');
+  const submitBtn = document.getElementById('submitBtn');
+  form?.addEventListener('submit', ()=>{
+    submitBtn.disabled=true; submitBtn.classList.add('opacity-70','cursor-not-allowed'); submitBtn.textContent='Processing…';
+    setTimeout(()=>{ submitBtn.disabled=false; submitBtn.classList.remove('opacity-70','cursor-not-allowed'); submitBtn.textContent='Register as Admin'; },4000);
+  });
+</script>
+
+<script src="/js/admin-access.js"></script>
+</body>
+</html>

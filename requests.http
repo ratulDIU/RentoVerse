@@ -1,0 +1,19 @@
+
+POST http://localhost:8080/api/rooms/add?providerId=1
+Content-Type: application/json
+
+{
+"title": "Sunny Studio Apartment",
+"rent": 15000,
+"location": "Dhaka",
+"type": "Studio",
+"available": true,
+"imageUrl": "https://cdn.example.com/image1.jpg"
+}
+
+
+
+
+
+
+

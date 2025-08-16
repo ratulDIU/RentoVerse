@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Pay 25% Deposit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* safety if Tailwind isn't loaded */
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="max-w-3xl mx-auto px-4 py-8 space-y-6">
+    <a href="renter-dashboard.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
+    <h1 class="text-2xl md:text-3xl font-bold">Pay 25% Deposit</h1>
+
+    <!-- Booking summary (filled by JS) -->
+    <div class="bg-white rounded-xl shadow p-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <div><span class="font-semibold">Room:</span> <span id="roomTitle">—</span> <span id="roomCodeBadge" class="ml-2 text-xs bg-gray-100 px-2 py-1 rounded"></span></div>
+            <div><span class="font-semibold">Location:</span> <span id="roomLocation">—</span></div>
+            <div><span class="font-semibold">Rent:</span> <span id="roomPrice">—</span></div>
+            <div><span class="font-semibold">Provider:</span> <span id="providerName">—</span> (<span id="providerEmail">—</span>)</div>
+        </div>
+    </div>
+
+    <!-- Payment form -->
+    <form id="payForm" class="bg-white rounded-xl shadow p-5 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Full Name</label>
+                <input type="text" id="payerName" class="border rounded w-full p-2" required />
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Phone</label>
+                <input type="text" id="payerPhone" class="border rounded w-full p-2" required />
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Amount (25%)</label>
+                <input type="number" id="amount" class="border rounded w-full p-2" value="0" readonly />
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-1">Payment Method</label>
+                <select id="method" class="border rounded w-full p-2" required>
+                    <option value="">Select Method</option>
+                    <option value="BKASH">bKash</option>
+                    <option value="NAGAD">Nagad</option>
+                    <option value="ROCKET">Rocket</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Method-specific details (only selected shows) -->
+        <div id="bkashDetails" class="hidden bg-pink-50 border border-pink-200 p-3 rounded text-sm">
+            <div class="font-semibold mb-1">Send To (bKash):</div>
+            <ul class="list-disc ml-5">
+                <li>Name: <span id="adminNameBk">RentoVerse Admin</span></li>
+                <li>bKash: <strong id="adminBkash">017XXXXXXXX</strong> (Send Money)</li>
+            </ul>
+            <p class="mt-2">➤ Please use <strong>Send Money</strong> (not Cash Out). Keep your <strong>Transaction ID</strong>.</p>
+        </div>
+
+        <div id="nagadDetails" class="hidden bg-amber-50 border border-amber-200 p-3 rounded text-sm">
+            <div class="font-semibold mb-1">Send To (Nagad):</div>
+            <ul class="list-disc ml-5">
+                <li>Name: <span id="adminNameNg">RentoVerse Admin</span></li>
+                <li>Nagad: <strong id="adminNagad">018XXXXXXXX</strong> (Send Money)</li>
+            </ul>
+            <p class="mt-2">➤ Please use <strong>Send Money</strong> (not Cash Out). Keep your <strong>Transaction ID</strong>.</p>
+        </div>
+
+        <div id="rocketDetails" class="hidden bg-sky-50 border border-sky-200 p-3 rounded text-sm">
+            <div class="font-semibold mb-1">Send To (Rocket):</div>
+            <ul class="list-disc ml-5">
+                <li>Name: <span id="adminNameRc">RentoVerse Admin</span></li>
+                <li>Rocket: <strong id="adminRocket">019XXXXXXXX</strong></li>
+            </ul>
+            <p class="mt-2">➤ Keep your <strong>Transaction ID</strong>.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Transaction ID</label>
+                <input type="text" id="txnId" class="border rounded w-full p-2" required />
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Note (optional)</label>
+                <input type="text" id="note" class="border rounded w-full p-2" placeholder="Anything helpful for admin..." />
+            </div>
+        </div>
+
+        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+            Confirm Payment
+        </button>
+    </form>
+</div>
+
+<script src="js/pay-escrow.js"></script>
+</body>
+</html>
