@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("image", imageInput.files[0]);
 
         try {
-            const res = await fetch("http://localhost:8080/api/rooms/add", {
+            const res = await fetch(`${window.location.origin}/api/rooms/add`, {
                 method: "POST",
                 body: formData,
             });

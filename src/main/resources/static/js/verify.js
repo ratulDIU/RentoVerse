@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
         params.append("code", code);
 
         try {
-            const res = await fetch("http://localhost:8080/api/auth/verify-code", {
+            const res = await fetch(`${window.location.origin}/api/auth/verify-code`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"

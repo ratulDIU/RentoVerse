@@ -36,7 +36,7 @@ function handleAddRoom() {
 
 // ✅ Load all posted rooms on window load
 window.onload = () => {
-    fetch('http://localhost:8080/api/rooms/all')
+    fetch(`${window.location.origin}/api/rooms/all`)
         .then(res => res.json())
         .then(rooms => {
             const container = document.getElementById('room-list');

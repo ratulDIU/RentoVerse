@@ -1,4 +1,4 @@
-const baseURL = "http://localhost:8080";
+const baseURL = window.location.origin;
 const el = (id) => document.getElementById(id);
 
 /* helpers */

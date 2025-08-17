@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/api/admin";
+const API = `${window.location.origin}/api/admin`;
 const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -234,7 +234,8 @@ async function deleteUser(userId) {
     if (!ok) return;
 
     try {
-        const res = await fetch(`http://localhost:8080/api/admin/users/${encodeURIComponent(userId)}`, {
+        const res = await fetch(`${window.location.origin}/api/admin/users/${encodeURIComponent(userId)}`,
+            {
             method: "DELETE"
         });
         const text = await res.text();

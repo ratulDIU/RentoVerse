@@ -1,5 +1,5 @@
 // js/pay-escrow.js
-const baseURL = "http://localhost:8080";
+const baseURL = window.location.origin;
 const $ = (id) => document.getElementById(id);
 
 let bookingId = null;

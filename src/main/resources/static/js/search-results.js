@@ -51,7 +51,7 @@
     if (loc) {
         showBanner(loc);
         // Use absolute backend URL to avoid origin issues
-        fetch(`http://localhost:8080/api/rooms/filter?location=${encodeURIComponent(loc)}`)
+        fetch(`${window.location.origin}/api/rooms/filter?location=${encodeURIComponent(loc)}`)
             .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
             .then(renderRooms)
             .catch((e) => {
@@ -126,7 +126,7 @@
             requestBtn.disabled = true;
             requestBtn.classList.add('opacity-60','cursor-not-allowed');
 
-            fetch("http://localhost:8080/api/bookings/request", {
+            fetch(`${window.location.origin}/api/bookings/request`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ renterEmail, roomId: room.id }),

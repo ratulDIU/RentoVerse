@@ -11,7 +11,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     }
 
     try {
-        const res = await fetch("http://localhost:8080/api/auth/login", {
+        const res = await fetch(`${window.location.origin}/api/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
@@ -53,7 +53,7 @@ async function adminLogin() {
     const password = document.getElementById("loginPassword").value;
 
     try {
-        const res = await fetch("http://localhost:8080/api/admin/login", {
+        const res = await fetch(`${window.location.origin}/api/admin/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })

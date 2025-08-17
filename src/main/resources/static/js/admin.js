@@ -1,4 +1,4 @@
-const BASE = "http://localhost:8080";
+const BASE = window.location.origin;
 
 function setMsg(el, text, ok = true) {
     if (!el) return;

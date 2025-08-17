@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const container = document.getElementById("roomList");
 
     try {
-        const res = await fetch("http://localhost:8080/api/rooms/available", {
+        const res = await fetch(`${window.location.origin}/api/rooms/available`, {
             headers: {
                 "Authorization": `Bearer ${token}`
             }
@@ -53,7 +53,7 @@ async function requestBooking(roomId) {
     }
 
     try {
-        const res = await fetch(`http://localhost:8080/api/bookings/request`, {
+        const res = await fetch(`${window.location.origin}/api/bookings/request`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,

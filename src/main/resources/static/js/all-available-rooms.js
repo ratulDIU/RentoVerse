@@ -100,7 +100,7 @@ function renderRoomCard(room) {
             return;
         }
 
-        fetch("http://localhost:8080/api/bookings/request", {
+        fetch(`${window.location.origin}/api/bookings/request`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // show skeletons while loading
     renderSkeletons(container, 6);
 
-    fetch("http://localhost:8080/api/rooms/available")
+    fetch(`${window.location.origin}/api/rooms/available`)
         .then((res) => res.json())
         .then((rooms) => {
             clearChildren(container);

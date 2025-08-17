@@ -11,7 +11,7 @@ if (adminAccessForm) {
         const body = { name, email, password }; // ✅ secret goes in query param, not body
 
         try {
-            const url = `http://localhost:8080/api/admin/auth/register?secret=${encodeURIComponent(secret)}`;
+            const url = `${window.location.origin}/api/admin/auth/register?secret=${encodeURIComponent(secret)}`;
             const res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

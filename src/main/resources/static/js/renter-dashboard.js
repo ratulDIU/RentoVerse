@@ -1,4 +1,4 @@
-const baseURL = "http://localhost:8080";
+const baseURL = `${window.location.origin}`;
 
 // ---------- boot ----------
 document.addEventListener("DOMContentLoaded", () => {

@@ -39,7 +39,7 @@
         inputEl().value = "";
 
         try {
-            const res = await fetch("http://localhost:8080/api/chatbot", {
+            const res = await fetch(`${window.location.origin}/api/chatbot`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
