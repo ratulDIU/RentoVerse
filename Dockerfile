@@ -1,15 +1,14 @@
-# ---- Build stage (JDK 24) ----
-FROM maven:3.9.9-eclipse-temurin-24 AS build
+# ---- Build stage (JDK 21) ----
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 COPY . .
-RUN ./mvnw clean package -DskipTests
+# faster reproducible build flags
+RUN ./mvnw -B -V -DskipTests clean package
 
-# ---- Run stage (JDK 24) ----
-FROM eclipse-temurin:24-jdk
+# ---- Run stage (JRE 21) ----
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
-
-# Render নিজের PORT দেয়; Spring Boot আমাদের application-render.properties থেকে PORT ধরবে
+ENV JAVA_OPTS=""
 EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh","-c","java $JAVA_OPTS -jar app.jar"]
