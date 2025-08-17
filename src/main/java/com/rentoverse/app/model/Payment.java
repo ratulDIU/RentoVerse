@@ -1,17 +1,20 @@
 package com.rentoverse.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "payments")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "payments")
+// Hibernate lazy proxy fields ignore for JSON
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class Payment {
 
     @Id
@@ -19,60 +22,60 @@ public class Payment {
     private Long id;
 
     /** The booking this payment belongs to */
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "booking_id", nullable = false)
+    // prevent infinite recursion when serializing a Payment that contains Booking which contains Payments, etc.
+    @JsonIgnoreProperties({"payments"})
+    private Booking booking;                    // getBooking()
 
-    /** the booking room-code */
-    private String roomCode; // ✅ make sure this exists
+    /** public code of booking/room (optional, for display) */
+    @Column(length = 64)
+    private String roomCode;
 
     /** Amount paid (expected ~25% of room rent) */
+    @Column(nullable = false)
     private Double amount;
 
     /** Payment method: BKASH / NAGAD / ROCKET / MANUAL, etc. */
     @Column(length = 24)
     private String method;
 
-    /** Free-form reference (we store TXN + ROOM + BK here if needed) */
+    /** Free-form reference (TXN/ROOM/BK etc.) */
     @Column(length = 255)
     private String reference;
 
-    // ----------------- NEW optional payer metadata -----------------
-    /** Renter’s name at time of payment (optional) */
+    // ----------------- optional payer metadata -----------------
     @Column(length = 120)
     private String payerName;
 
-    /** Renter’s phone (optional) */
     @Column(length = 32)
     private String payerPhone;
 
-    /** Raw transaction id (optional, also duplicated inside reference) */
     @Column(length = 128)
     private String txnId;
 
-    /** Optional note from renter */
     @Column(length = 512)
     private String note;
-    // --------------------------------------------------------------
+    // -----------------------------------------------------------
 
-    /** Use the shared enum in com.rentoverse.app.model */
+    /** Lifecycle of the payment */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 24)
-    private PaymentStatus status;
+    private PaymentStatus status;               // getStatus(), setStatus(PaymentStatus)
 
+    /** Created when row is inserted */
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    private LocalDateTime confirmedAt;
 
-    /** Timestamp when refunded (if refunded) */
-    private LocalDateTime refundedAt;
+    /** When admin confirmed escrow */
+    private LocalDateTime confirmedAt;          // setConfirmedAt(...)
+
+    /** When refunded (if refunded) */
+    private LocalDateTime refundedAt;           // setRefundedAt(...)
 
     @PrePersist
     public void onCreate() {
-        if (this.createdAt == null) {
-            this.createdAt = LocalDateTime.now();
-        }
-        if (this.status == null) {
-            this.status = PaymentStatus.PENDING;
-        }
+        if (this.createdAt == null) this.createdAt = LocalDateTime.now();
+        if (this.status == null)    this.status    = PaymentStatus.PENDING;
     }
 }

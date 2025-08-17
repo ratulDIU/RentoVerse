@@ -19,7 +19,7 @@
 	</parent>
 
 	<properties>
-		<!-- Use LTS Java for best tool support (works with Lombok, Render, etc.) -->
+		<!-- LTS Java for best compatibility -->
 		<java.version>21</java.version>
 	</properties>
 
@@ -40,7 +40,7 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
-		<!-- Bean validation (Hibernate Validator on Jakarta Validation) -->
+		<!-- Bean Validation -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.34</version>
+			<version>1.18.36</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -81,15 +81,14 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Extra libs you were using -->
+		<!-- Extra libs -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20240303</version>
 		</dependency>
 
-		<!-- SnakeYAML (Boot manages a compatible version;
-             keep explicit only if you need 2.x features) -->
+		<!-- Optional: keep only if you really need 2.x features -->
 		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
@@ -99,18 +98,18 @@
 
 	<build>
 		<plugins>
-			<!-- Ensure Lombok is used as an annotation processor -->
+			<!-- Ensure Lombok annotation processing on Java 21 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
+				<version>3.12.1</version>
 				<configuration>
 					<release>${java.version}</release>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>1.18.34</version>
+							<version>1.18.36</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>

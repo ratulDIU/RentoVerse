@@ -7,20 +7,30 @@ import com.rentoverse.app.repository.UserRepository;
 import com.rentoverse.app.service.BookingService;
 import com.rentoverse.app.service.PaymentService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+@Slf4j
+@Validated
 @RestController
 @RequestMapping("/api/bookings")
+// চাইলে এটা উঠিয়ে দিতে পারেন; global CORS থাকলে প্রয়োজন নেই
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class BookingController {
 
     private final BookingService bookingService;
-    private final PaymentService paymentService; // kept for legacy /pay-escrow passthrough
+    private final PaymentService paymentService; // legacy support
     private final UserRepository userRepository;
 
     // ======================= RENTER: CREATE / CANCEL =======================
@@ -28,9 +38,15 @@ public class BookingController {
     /** Renter → request a booking */
     @PostMapping("/request")
     public ResponseEntity<String> requestBooking(@RequestBody Map<String,String> payload) {
-        String renterEmail = payload.get("renterEmail");
-        Long roomId = Long.parseLong(payload.get("roomId"));
-        User renter = userRepository.findByEmail(renterEmail).orElseThrow();
+        final String renterEmail = payload.get("renterEmail");
+        final String roomIdRaw   = payload.get("roomId");
+        if (renterEmail == null || roomIdRaw == null) {
+            return ResponseEntity.badRequest().body("renterEmail and roomId are required");
+        }
+        Long roomId = Long.parseLong(roomIdRaw);
+        User renter = userRepository.findByEmail(renterEmail).orElseThrow(
+                () -> new NoSuchElementException("Renter not found: " + renterEmail)
+        );
         return ResponseEntity.ok(bookingService.createBooking(renter.getId(), roomId));
     }
 
@@ -45,22 +61,26 @@ public class BookingController {
     /** Provider → approve / decline */
     @PostMapping("/respond")
     public ResponseEntity<String> respond(@RequestParam Long bookingId, @RequestParam String action) {
-        return ResponseEntity.ok(bookingService.respondBooking(bookingId, action));
+        return ResponseEntity.ok(bookingService.respondBooking(bookingId, action == null ? "" : action.toUpperCase()));
     }
 
     // ======================= RENTER: LISTS =======================
 
     /** Renter → only pending requests */
     @GetMapping("/pending")
-    public List<Booking> pending(@RequestParam String renterEmail) {
-        User renter = userRepository.findByEmail(renterEmail).orElseThrow();
+    public List<Booking> pending(@RequestParam @Email @NotBlank String renterEmail) {
+        User renter = userRepository.findByEmail(renterEmail).orElseThrow(
+                () -> new NoSuchElementException("Renter not found: " + renterEmail)
+        );
         return bookingService.getPendingBookingsByRenter(renter.getId());
     }
 
     /** Renter → all my bookings */
     @GetMapping("/all_by_renter")
-    public List<Booking> allByRenter(@RequestParam String renterEmail) {
-        User renter = userRepository.findByEmail(renterEmail).orElseThrow();
+    public List<Booking> allByRenter(@RequestParam @Email @NotBlank String renterEmail) {
+        User renter = userRepository.findByEmail(renterEmail).orElseThrow(
+                () -> new NoSuchElementException("Renter not found: " + renterEmail)
+        );
         return bookingService.getBookingsByRenter(renter.getId());
     }
 
@@ -70,7 +90,9 @@ public class BookingController {
                                   @RequestParam(required = false) String renterEmail) {
         Long id = renterId;
         if (id == null && renterEmail != null) {
-            id = userRepository.findByEmail(renterEmail).orElseThrow().getId();
+            id = userRepository.findByEmail(renterEmail).orElseThrow(
+                    () -> new NoSuchElementException("Renter not found: " + renterEmail)
+            ).getId();
         }
         if (id == null) throw new IllegalArgumentException("renterId or renterEmail is required");
         return bookingService.getAwaitingPaymentByRenter(id);
@@ -78,8 +100,10 @@ public class BookingController {
 
     /** Renter → bookings in visit window (PAID_CONFIRMED) */
     @GetMapping("/visit")
-    public List<Booking> visitList(@RequestParam String renterEmail) {
-        User renter = userRepository.findByEmail(renterEmail).orElseThrow();
+    public List<Booking> visitList(@RequestParam @Email @NotBlank String renterEmail) {
+        User renter = userRepository.findByEmail(renterEmail).orElseThrow(
+                () -> new NoSuchElementException("Renter not found: " + renterEmail)
+        );
         return bookingService.getPaidConfirmedByRenter(renter.getId());
     }
 
@@ -87,14 +111,15 @@ public class BookingController {
 
     /** Provider → see incoming requests */
     @GetMapping("/request_list")
-    public List<BookingRequestDto> providerRequests(@RequestParam String email) {
-        User provider = userRepository.findByEmail(email).orElseThrow();
+    public List<BookingRequestDto> providerRequests(@RequestParam @Email @NotBlank String email) {
+        User provider = userRepository.findByEmail(email).orElseThrow(
+                () -> new NoSuchElementException("Provider not found: " + email)
+        );
         return bookingService.getBookingsForProvider(provider.getId())
                 .stream().map(BookingRequestDto::new).collect(Collectors.toList());
     }
 
     // ======================= LEGACY SUPPORT (optional) =======================
-    // You now have PaymentController JSON endpoint. This remains for backward compatibility.
 
     /** Renter → pay escrow (legacy form-style). Prefer PaymentController JSON endpoint. */
     @PostMapping("/{id}/pay-escrow")
@@ -113,21 +138,17 @@ public class BookingController {
 
     /** Fetch a booking by id (used by payment.html to show room summary) */
     @GetMapping("/by-id")
-    public Booking getById(@RequestParam Long id) {
-        return bookingService.getById(id);
+    public ResponseEntity<Booking> getById(@RequestParam Long id) {
+        return ResponseEntity.ok(bookingService.getById(id));
     }
 
-    // ======================= ADMIN LEGACY (keep if you still call) =======================
-    // Admin confirmation now happens via: POST /api/payments/{paymentId}/confirm in PaymentController.
-    // The endpoints below are kept for historical compatibility with your UI.
+    // ======================= ADMIN LEGACY =======================
 
-    /** Admin → finalize after visit (booking-only flow) */
     @PostMapping("/{id}/complete")
     public ResponseEntity<String> complete(@PathVariable Long id) {
         return ResponseEntity.ok(bookingService.completeBooking(id));
     }
 
-    /** Admin → refund after viewing (booking-only flow) */
     @PostMapping("/{id}/refund")
     public ResponseEntity<String> refund(@PathVariable Long id) {
         return ResponseEntity.ok(bookingService.cancelAfterViewing(id));
@@ -137,7 +158,8 @@ public class BookingController {
     public ResponseEntity<String> renterDecision(@PathVariable Long id,
                                                  @RequestParam String action,
                                                  @RequestParam(required = false) String note) {
-        switch (action.toUpperCase()) {
+        String normalized = action == null ? "" : action.toUpperCase();
+        switch (normalized) {
             case "REFUND":
                 return ResponseEntity.ok(bookingService.requestRefundDecision(id, note));
             case "COMPLETE":
@@ -147,4 +169,16 @@ public class BookingController {
         }
     }
 
+    // ------------------- simple error handlers -------------------
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNotFound(NoSuchElementException ex) {
+        log.warn("Not found: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleBadRequest(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }
