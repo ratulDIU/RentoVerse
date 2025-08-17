@@ -7,13 +7,10 @@ RUN mvn -q -DskipTests clean package
 # ---------- Run stage ----------
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-
-# জার নামটা টার্গেটে যা জেনারেট হয়েছে সেটাই কপি করো
-COPY --from=build /app/target/rentoverse-0.0.1-SNAPSHOT.jar app.jar
+ARG JAR_FILE=target/*.jar
+COPY --from=build /app/${JAR_FILE} app.jar
 
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
-# Render আপনার কন্টেইনারে PORT পাঠায়; আমরা সেটাই ব্যবহার করব
 ENV PORT=8080
 EXPOSE 8080
-
 ENTRYPOINT ["sh","-c","java $JAVA_OPTS -jar app.jar --server.port=${PORT}"]
