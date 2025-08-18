@@ -86,6 +86,22 @@
 
 <!-- Results logic (backend unchanged) -->
 <script>
+    // ---------- API base resolution ----------
+    // Deployed: same-origin (https://<your-app>/api/...)
+    // Local dev / file:// : fallback to your Render backend (override-able via localStorage.API_BASE)
+    (function initApiBase() {
+        const origin = window.location.origin;
+        const isLocal =
+            origin.startsWith("http://localhost") ||
+            origin.startsWith("http://127.") ||
+            origin === "null" ||
+            origin.startsWith("file:");
+        const DEFAULT_REMOTE = "https://rentoverse-backend.onrender.com"; // ← তোমার backend URL
+        window.API_BASE = isLocal
+            ? (localStorage.getItem("API_BASE") || DEFAULT_REMOTE)
+            : origin;
+    })();
+
     // Toast helper
     function showToast(message, color = "bg-red-500") {
         const toast = document.createElement("div");
@@ -112,8 +128,17 @@
 
         queryLine.textContent = `Showing results for "${loc}"`;
 
-        fetch(`http://localhost:8080/api/rooms/filter?location=${encodeURIComponent(loc)}&type=`)
-            .then(response => response.json())
+        // ✅ localhost বাদ দিয়ে ডাইনামিক API_BASE ব্যবহার করো
+        fetch(`${window.API_BASE}/api/rooms/filter?location=${encodeURIComponent(loc)}&type=`)
+            .then(async (response) => {
+                if (!response.ok) {
+                    const txt = await response.text().catch(() => "");
+                    throw new Error(txt || `HTTP ${response.status}`);
+                }
+                // কিছু ক্ষেত্রে backend empty body দিতে পারে, তাই সেফটি:
+                const text = await response.text();
+                return text ? JSON.parse(text) : [];
+            })
             .then(data => {
                 container.innerHTML = ""; // clear skeletons
 
@@ -133,27 +158,26 @@
                     const card = document.createElement("article");
                     card.className = "bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition ring-1 ring-slate-200 animate-fade-in-up";
 
-                    // IMPORTANT: do not nest backticks in template literal; use single quotes inside the ternary
                     card.innerHTML = `
-              <div class="relative">
-                <img src="${img}" alt="${title}" class="w-full h-44 md:h-48 object-cover"
-                     onerror="this.src='https://via.placeholder.com/640x360?text=Room'; this.onerror=null;">
-                ${type ? '<span class="absolute top-3 left-3 rounded-full bg-white/90 text-slate-800 text-xs font-semibold px-3 py-1 ring-1 ring-slate-200">' + type + '</span>' : ''}
+            <div class="relative">
+              <img src="${img}" alt="${title}" class="w-full h-44 md:h-48 object-cover"
+                   onerror="this.src='https://via.placeholder.com/640x360?text=Room'; this.onerror=null;">
+              ${type ? '<span class="absolute top-3 left-3 rounded-full bg-white/90 text-slate-800 text-xs font-semibold px-3 py-1 ring-1 ring-slate-200">' + type + '</span>' : ''}
+            </div>
+            <div class="p-4">
+              <h2 class="font-extrabold text-lg text-slate-900 leading-snug">${title}</h2>
+              <p class="text-slate-600 text-sm mt-0.5">📍 ${locText}</p>
+              <p class="text-slate-700 text-sm mt-1">${desc}</p>
+              <div class="mt-3 flex items-center justify-between gap-3">
+                <div class="text-slate-900 font-bold whitespace-nowrap">৳ ${rent} <span class="text-slate-500 font-medium">/ month</span></div>
+                <button class="request-btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-3 rounded w-full sm:w-auto">
+                  Request
+                </button>
               </div>
-              <div class="p-4">
-                <h2 class="font-extrabold text-lg text-slate-900 leading-snug">${title}</h2>
-                <p class="text-slate-600 text-sm mt-0.5">📍 ${locText}</p>
-                <p class="text-slate-700 text-sm mt-1">${desc}</p>
-                <div class="mt-3 flex items-center justify-between gap-3">
-                  <div class="text-slate-900 font-bold whitespace-nowrap">৳ ${rent} <span class="text-slate-500 font-medium">/ month</span></div>
-                  <button class="request-btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-3 rounded w-full sm:w-auto">
-                    Request
-                  </button>
-                </div>
-              </div>
-            `;
+            </div>
+          `;
 
-                    // Attach click handler to Request button
+                    // Request button → dynamic API_BASE
                     const btn = card.querySelector(".request-btn");
                     btn.addEventListener("click", () => {
                         const renterEmail = localStorage.getItem("email");
@@ -171,7 +195,7 @@
                         btn.disabled = true;
                         btn.classList.add("opacity-60","cursor-not-allowed");
 
-                        fetch("http://localhost:8080/api/bookings/request", {
+                        fetch(`${window.API_BASE}/api/bookings/request`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ renterEmail, roomId: room.id })
