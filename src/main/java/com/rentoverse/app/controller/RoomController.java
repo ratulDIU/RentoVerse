@@ -40,16 +40,25 @@ public class RoomController {
                                      @RequestParam(name = "h-captcha-response", required = false) String hCaptchaToken,
                                      HttpServletRequest request) {
 
-        // 🔐 টোকেন না এলে সরাসরি ব্যাড রিকোয়েস্ট
+        // 🔁 Fallback: param binding না হলে request থেকে টেনে নাও
+        if (hCaptchaToken == null || hCaptchaToken.isBlank()) {
+            hCaptchaToken = request.getParameter("h-captcha-response");
+        }
         if (hCaptchaToken == null || hCaptchaToken.isBlank()) {
             return ResponseEntity.badRequest().body("❌ No hCaptcha token received.");
         }
 
+        // প্রক্সির পেছনে থাকলে রিয়েল আইপি ধরো
+        String ip = Optional.ofNullable(request.getHeader("X-Forwarded-For"))
+                .map(v -> v.split(",")[0].trim())
+                .orElse(request.getRemoteAddr());
+
         // ✅ সার্ভার-সাইড ভেরিফিকেশন
-        if (!hcaptchaService.verify(hCaptchaToken, request.getRemoteAddr())) {
+        if (!hcaptchaService.verify(hCaptchaToken, ip)) {
             return ResponseEntity.badRequest().body("❌ Failed human verification.");
         }
 
+        // ------- rest of your code as-is -------
         Optional<User> providerOpt = userRepository.findByEmail(email);
         if (providerOpt.isEmpty()) {
             return ResponseEntity.badRequest().body("❌ Provider not found.");
@@ -84,6 +93,7 @@ public class RoomController {
         Room saved = roomService.addRoom(room);
         return ResponseEntity.ok(saved);
     }
+
 
     @GetMapping("/provider")
     public ResponseEntity<?> getRoomsByProviderEmail(@RequestParam String email) {

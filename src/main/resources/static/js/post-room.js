@@ -1,15 +1,12 @@
 // post-room.js
 
 // ---------- API base resolution ----------
-// Deployed: same-origin (https://<your-app>/api/...)
-// Local dev (file://, http://localhost): default to your Render backend,
-// but allow override via localStorage.API_BASE
 (function initApiBase() {
     const origin = window.location.origin;
     const isLocal =
         origin.startsWith("http://localhost") ||
         origin.startsWith("http://127.") ||
-        origin === "null" ||                // some file:// cases
+        origin === "null" ||
         origin.startsWith("file:");
     const DEFAULT_REMOTE = "https://rentoverse-backend.onrender.com";
     window.API_BASE = isLocal
@@ -40,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function onSubmit(e) {
         e.preventDefault();
 
-        // auth/role guard (client-side)
+        // auth/role guard
         const role  = localStorage.getItem("role");
         const email = localStorage.getItem("email");
         if (!email || !role)  { toast("You must be logged in."); location.href = "login.html"; return; }
@@ -55,16 +52,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const description   = document.getElementById("description")?.value?.trim() || "";
         const imageFile     = imageInput?.files?.[0] || null;
 
-        // minimal validations
         if (!title)     return toast("Please enter a title.");
         if (!location)  return toast("Please enter a location.");
         if (!rent)      return toast("Please enter rent.");
         if (!imageFile) return toast("Please choose an image.");
 
-        // ✅ Get hCaptcha token
-        const token = (window.hcaptcha && window.hcaptcha.getResponse)
-            ? window.hcaptcha.getResponse()
-            : "";
+        // ✅ hCaptcha token (robust)
+        let token = "";
+        try { token = window.hcaptcha?.getResponse?.() || ""; } catch {}
+        if (!token) {
+            // auto-render হলে hidden textarea ইনজেক্ট হয়
+            token = document.querySelector('textarea[name="h-captcha-response"]')?.value || "";
+        }
         if (!token) {
             toast("Please complete the hCaptcha.");
             return;
@@ -78,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fd.append("availableFrom", availableFrom);
         fd.append("type",          type);
         fd.append("description",   description);
-        fd.append("email",         email);      // backend expects provider email
+        fd.append("email",         email);
         fd.append("image",         imageFile);
         fd.append("h-captcha-response", token); // 🔑 send token
 
