@@ -2,7 +2,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("heroSearchForm");
     const locationInput = document.getElementById("location");
-
     if (!form || !locationInput) return;
 
     form.addEventListener("submit", (e) => {
@@ -15,15 +14,19 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // ✅ case-insensitive key: সবসময় lowercase রেখে সার্চ চালাবো
-        const location = locationRaw.toLowerCase();
-
-        // আগের key বজায়: যেটা রেজাল্ট পেজ পড়ে — এখানে এখন থেকে lowercase থাকবে
-        localStorage.setItem("searchLocation", location);
-
-        // চাইলে UI দেখানোর জন্য আসল টেক্সটও রেখে দিলাম (কেউ ব্যবহার করলে করবে)
+        // Keep original for display & server query
         localStorage.setItem("searchLocationOriginal", locationRaw);
+        // Keep legacy lowercased key for backward compat (optional)
+        localStorage.setItem("searchLocation", locationRaw.toLowerCase());
 
         window.location.href = "search-results.html";
+    });
+
+    // Quick chips fill helper if present
+    document.querySelectorAll("[data-quick]")?.forEach(chip => {
+        chip.addEventListener("click", () => {
+            const val = chip.getAttribute("data-quick");
+            if (val && locationInput) locationInput.value = val;
+        });
     });
 });

@@ -84,11 +84,9 @@
 <!-- Toasts -->
 <div id="toast-container" class="fixed top-20 right-5 z-50 space-y-2"></div>
 
-<!-- Results logic (backend unchanged) -->
+<!-- Single, final script (no duplicates) -->
 <script>
     // ---------- API base resolution ----------
-    // Deployed: same-origin (https://<your-app>/api/...)
-    // Local dev / file:// : fallback to your Render backend (override-able via localStorage.API_BASE)
     (function initApiBase() {
         const origin = window.location.origin;
         const isLocal =
@@ -96,7 +94,7 @@
             origin.startsWith("http://127.") ||
             origin === "null" ||
             origin.startsWith("file:");
-        const DEFAULT_REMOTE = "https://rentoverse-backend.onrender.com"; // ← তোমার backend URL
+        const DEFAULT_REMOTE = "https://rentoverse-backend.onrender.com"; // <- your backend URL
         window.API_BASE = isLocal
             ? (localStorage.getItem("API_BASE") || DEFAULT_REMOTE)
             : origin;
@@ -104,17 +102,28 @@
 
     // Toast helper
     function showToast(message, color = "bg-red-500") {
+        let root = document.getElementById("toast-container");
+        if (!root) {
+            root = document.createElement("div");
+            root.id = "toast-container";
+            root.className = "fixed top-20 right-5 z-50 space-y-2";
+            document.body.appendChild(root);
+        }
         const toast = document.createElement("div");
         toast.className = `${color} text-white px-4 py-2 rounded shadow-md animate-fade-in-up mt-2`;
         toast.innerText = message;
-        document.getElementById("toast-container").appendChild(toast);
+        root.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        const loc = localStorage.getItem("searchLocation");
-        const queryLine = document.getElementById("queryLine");
-        const container = document.getElementById("results");
+        // Prefer original text; fallback to lowercased legacy key
+        const storedOriginal = localStorage.getItem("searchLocationOriginal") || "";
+        const storedLower    = localStorage.getItem("searchLocation") || "";
+        const loc = (storedOriginal || storedLower).trim();
+
+        const queryLine  = document.getElementById("queryLine");
+        const container  = document.getElementById("results");
         const emptyState = document.getElementById("emptyState");
 
         if (!loc) {
@@ -128,97 +137,122 @@
 
         queryLine.textContent = `Showing results for "${loc}"`;
 
-        // ✅ localhost বাদ দিয়ে ডাইনামিক API_BASE ব্যবহার করো
-        fetch(`${window.API_BASE}/api/rooms/filter?location=${encodeURIComponent(loc)}&type=`)
-            .then(async (response) => {
-                if (!response.ok) {
-                    const txt = await response.text().catch(() => "");
-                    throw new Error(txt || `HTTP ${response.status}`);
+        // Primary call: /filter; if fails, fallback: /available + client-side match
+        loadFilter(loc)
+            .then(renderList)
+            .catch(async (e) => {
+                console.warn("filter failed, trying available:", e?.message || e);
+                try {
+                    const list = await loadAvailableAndClientFilter(loc);
+                    renderList(list);
+                } catch (e2) {
+                    console.error(e2);
+                    container.innerHTML = "<p class='text-red-600'>Error loading search results.</p>";
                 }
-                // কিছু ক্ষেত্রে backend empty body দিতে পারে, তাই সেফটি:
-                const text = await response.text();
-                return text ? JSON.parse(text) : [];
-            })
-            .then(data => {
-                container.innerHTML = ""; // clear skeletons
-
-                if (!Array.isArray(data) || data.length === 0) {
-                    emptyState.classList.remove("hidden");
-                    return;
-                }
-
-                data.forEach(room => {
-                    const img = room.imageUrl || "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop";
-                    const title = room.title || "Untitled Room";
-                    const rent = room.rent != null ? room.rent : "N/A";
-                    const locText = room.location || "—";
-                    const type = room.type || "";
-                    const desc = room.description || "—";
-
-                    const card = document.createElement("article");
-                    card.className = "bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition ring-1 ring-slate-200 animate-fade-in-up";
-
-                    card.innerHTML = `
-            <div class="relative">
-              <img src="${img}" alt="${title}" class="w-full h-44 md:h-48 object-cover"
-                   onerror="this.src='https://via.placeholder.com/640x360?text=Room'; this.onerror=null;">
-              ${type ? '<span class="absolute top-3 left-3 rounded-full bg-white/90 text-slate-800 text-xs font-semibold px-3 py-1 ring-1 ring-slate-200">' + type + '</span>' : ''}
-            </div>
-            <div class="p-4">
-              <h2 class="font-extrabold text-lg text-slate-900 leading-snug">${title}</h2>
-              <p class="text-slate-600 text-sm mt-0.5">📍 ${locText}</p>
-              <p class="text-slate-700 text-sm mt-1">${desc}</p>
-              <div class="mt-3 flex items-center justify-between gap-3">
-                <div class="text-slate-900 font-bold whitespace-nowrap">৳ ${rent} <span class="text-slate-500 font-medium">/ month</span></div>
-                <button class="request-btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-3 rounded w-full sm:w-auto">
-                  Request
-                </button>
-              </div>
-            </div>
-          `;
-
-                    // Request button → dynamic API_BASE
-                    const btn = card.querySelector(".request-btn");
-                    btn.addEventListener("click", () => {
-                        const renterEmail = localStorage.getItem("email");
-                        const role = localStorage.getItem("role");
-
-                        if (!renterEmail || !role) {
-                            showToast("Please login as a renter to request a room.");
-                            return;
-                        }
-                        if (role !== "RENTER") {
-                            showToast("Only renters can request a room.");
-                            return;
-                        }
-
-                        btn.disabled = true;
-                        btn.classList.add("opacity-60","cursor-not-allowed");
-
-                        fetch(`${window.API_BASE}/api/bookings/request`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ renterEmail, roomId: room.id })
-                        })
-                            .then(res => {
-                                if (!res.ok) throw new Error("Request failed");
-                                return res.text();
-                            })
-                            .then(() => showToast("✅ Booking request sent!", "bg-green-600"))
-                            .catch(err => showToast("❌ Error: " + (err.message || "Failed")))
-                            .finally(() => {
-                                btn.disabled = false;
-                                btn.classList.remove("opacity-60","cursor-not-allowed");
-                            });
-                    });
-
-                    container.appendChild(card);
-                });
-            })
-            .catch(err => {
-                console.error(err);
-                container.innerHTML = "<p class='text-red-600'>Error loading search results.</p>";
             });
+
+        // ---- helpers ----
+        async function loadFilter(location) {
+            const url = `${window.API_BASE}/api/rooms/filter?location=${encodeURIComponent(location)}&type=`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error((await tryText(res)) || `HTTP ${res.status}`);
+            const text = await tryText(res);
+            return text ? JSON.parse(text) : [];
+        }
+
+        async function loadAvailableAndClientFilter(location) {
+            const res = await fetch(`${window.API_BASE}/api/rooms/available`);
+            if (!res.ok) throw new Error((await tryText(res)) || `HTTP ${res.status}`);
+            const list = await res.json().catch(() => []);
+            const needle = location.toLowerCase();
+            return list.filter(r => (r.location || "").toLowerCase().includes(needle));
+        }
+
+        async function tryText(res) {
+            try { return await res.text(); } catch { return ""; }
+        }
+
+        function absoluteImg(url) {
+            if (!url) return "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop";
+            if (url.startsWith("http")) return url;
+            return `${window.API_BASE}${url}`; // <- IMPORTANT when FE/BE on different domains
+        }
+
+        function renderList(data) {
+            container.innerHTML = ""; // clear skeletons
+
+            if (!Array.isArray(data) || data.length === 0) {
+                emptyState.classList.remove("hidden");
+                return;
+            }
+
+            data.forEach(room => {
+                const img   = absoluteImg(room.imageUrl);
+                const title = room.title || "Untitled Room";
+                const rent  = room.rent != null ? room.rent : "N/A";
+                const locTx = room.location || "—";
+                const type  = room.type || "";
+                const desc  = room.description || "—";
+
+                const card = document.createElement("article");
+                card.className = "bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition ring-1 ring-slate-200 animate-fade-in-up";
+
+                card.innerHTML = `
+          <div class="relative">
+            <img src="${img}" alt="${title}" class="w-full h-44 md:h-48 object-cover"
+                 onerror="this.src='https://via.placeholder.com/640x360?text=Room'; this.onerror=null;">
+            ${type ? '<span class="absolute top-3 left-3 rounded-full bg-white/90 text-slate-800 text-xs font-semibold px-3 py-1 ring-1 ring-slate-200">' + type + '</span>' : ''}
+          </div>
+          <div class="p-4">
+            <h2 class="font-extrabold text-lg text-slate-900 leading-snug">${title}</h2>
+            <p class="text-slate-600 text-sm mt-0.5">📍 ${locTx}</p>
+            <p class="text-slate-700 text-sm mt-1">${desc}</p>
+            <div class="mt-3 flex items-center justify-between gap-3">
+              <div class="text-slate-900 font-bold whitespace-nowrap">৳ ${rent} <span class="text-slate-500 font-medium">/ month</span></div>
+              <button class="request-btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-3 rounded w-full sm:w-auto">
+                Request
+              </button>
+            </div>
+          </div>
+        `;
+
+                const btn = card.querySelector(".request-btn");
+                btn.addEventListener("click", () => {
+                    const renterEmail = localStorage.getItem("email");
+                    const role = localStorage.getItem("role");
+
+                    if (!renterEmail || !role) {
+                        showToast("Please login as a renter to request a room.");
+                        return;
+                    }
+                    if (role !== "RENTER") {
+                        showToast("Only renters can request a room.");
+                        return;
+                    }
+
+                    btn.disabled = true;
+                    btn.classList.add("opacity-60","cursor-not-allowed");
+
+                    fetch(`${window.API_BASE}/api/bookings/request`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ renterEmail, roomId: room.id })
+                    })
+                        .then(res => {
+                            if (!res.ok) throw new Error("Request failed");
+                            return res.text();
+                        })
+                        .then(() => showToast("✅ Booking request sent!", "bg-green-600"))
+                        .catch(err => showToast("❌ Error: " + (err.message || "Failed")))
+                        .finally(() => {
+                            btn.disabled = false;
+                            btn.classList.remove("opacity-60","cursor-not-allowed");
+                        });
+                });
+
+                container.appendChild(card);
+            });
+        }
     });
 </script>
 </body>
