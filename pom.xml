@@ -88,6 +88,11 @@
 			<version>20240303</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
 		<!-- Optional: keep only if you really need 2.x features -->
 		<dependency>
 			<groupId>org.yaml</groupId>

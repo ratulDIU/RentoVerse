@@ -4,9 +4,12 @@ import com.rentoverse.app.model.Room;
 import com.rentoverse.app.model.User;
 import com.rentoverse.app.repository.RoomRepository;
 import com.rentoverse.app.repository.UserRepository;
+import com.rentoverse.app.service.HcaptchaService;
 import com.rentoverse.app.service.RoomService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,30 +27,44 @@ public class RoomController {
     @Autowired private RoomService roomService;
     @Autowired private UserRepository userRepository;
     @Autowired private RoomRepository roomRepository;
+    @Autowired private HcaptchaService hcaptchaService;
 
-    @PostMapping("/add")
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addRoom(@RequestParam String title,
                                      @RequestParam String description,
                                      @RequestParam double rent,
                                      @RequestParam String location,
                                      @RequestParam String type,
                                      @RequestParam String email,
-                                     @RequestParam("image") MultipartFile image) {
+                                     @RequestParam("image") MultipartFile image,
+                                     @RequestParam(name = "h-captcha-response", required = false) String hCaptchaToken,
+                                     HttpServletRequest request) {
+
+        // 🔐 টোকেন না এলে সরাসরি ব্যাড রিকোয়েস্ট
+        if (hCaptchaToken == null || hCaptchaToken.isBlank()) {
+            return ResponseEntity.badRequest().body("❌ No hCaptcha token received.");
+        }
+
+        // ✅ সার্ভার-সাইড ভেরিফিকেশন
+        if (!hcaptchaService.verify(hCaptchaToken, request.getRemoteAddr())) {
+            return ResponseEntity.badRequest().body("❌ Failed human verification.");
+        }
+
         Optional<User> providerOpt = userRepository.findByEmail(email);
         if (providerOpt.isEmpty()) {
             return ResponseEntity.badRequest().body("❌ Provider not found.");
         }
 
-        if (image.isEmpty() || !image.getContentType().startsWith("image/")) {
+        if (image.isEmpty() || image.getContentType() == null || !image.getContentType().startsWith("image/")) {
             return ResponseEntity.badRequest().body("❌ Invalid image file.");
         }
 
-        // Save image
         String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
         String uploadDir = System.getProperty("user.home") + File.separator + "uploads";
         File dir = new File(uploadDir);
         if (!dir.exists()) dir.mkdirs();
-        File imageFile = new File(uploadDir + File.separator + fileName);
+
+        File imageFile = new File(dir, fileName);
         try {
             image.transferTo(imageFile);
         } catch (IOException e) {
@@ -61,7 +78,7 @@ public class RoomController {
         room.setLocation(location);
         room.setType(type);
         room.setImageUrl("/uploads/" + fileName);
-        room.setAvailable(true); // new rooms start as available
+        room.setAvailable(true);
         room.setProvider(providerOpt.get());
 
         Room saved = roomService.addRoom(room);

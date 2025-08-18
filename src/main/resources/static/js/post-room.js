@@ -17,22 +17,19 @@
         : origin;
 })();
 
-// Optional: set once to test against a different backend from local dev
-// localStorage.setItem("API_BASE", "https://your-backend.onrender.com");
-
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("postRoomForm");
+    const form       = document.getElementById("postRoomForm");
     const imageInput = document.getElementById("image");
     const previewImg = document.getElementById("preview");
     const successMsg = document.getElementById("successMsg");
 
-    // small helper
-    const toast = (msg) => alert(msg);
+    const toast = (m) => alert(m);
 
-    // image preview
+    // Image preview
     imageInput?.addEventListener("change", function () {
         const file = this.files?.[0];
-        if (file && previewImg) {
+        if (!file) { previewImg?.classList.add("hidden"); if (previewImg) previewImg.src = ""; return; }
+        if (previewImg) {
             previewImg.src = URL.createObjectURL(file);
             previewImg.classList.remove("hidden");
         }
@@ -44,18 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         // auth/role guard (client-side)
-        const role = localStorage.getItem("role");
+        const role  = localStorage.getItem("role");
         const email = localStorage.getItem("email");
-
-        if (!email || !role) {
-            toast("You must be logged in.");
-            window.location.href = "login.html";
-            return;
-        }
-        if (role !== "PROVIDER") {
-            toast("Only providers can post rooms.");
-            return;
-        }
+        if (!email || !role)  { toast("You must be logged in."); location.href = "login.html"; return; }
+        if (role !== "PROVIDER"){ toast("Only providers can post rooms."); return; }
 
         // collect fields
         const title         = document.getElementById("title")?.value?.trim() || "";
@@ -67,20 +56,31 @@ document.addEventListener("DOMContentLoaded", () => {
         const imageFile     = imageInput?.files?.[0] || null;
 
         // minimal validations
-        if (!title)       return toast("Please enter a title.");
-        if (!location)    return toast("Please enter a location.");
-        if (!rent)        return toast("Please enter rent.");
-        if (!imageFile)   return toast("Please choose an image.");
+        if (!title)     return toast("Please enter a title.");
+        if (!location)  return toast("Please enter a location.");
+        if (!rent)      return toast("Please enter rent.");
+        if (!imageFile) return toast("Please choose an image.");
 
+        // ✅ Get hCaptcha token
+        const token = (window.hcaptcha && window.hcaptcha.getResponse)
+            ? window.hcaptcha.getResponse()
+            : "";
+        if (!token) {
+            toast("Please complete the hCaptcha.");
+            return;
+        }
+
+        // Build form data (do NOT set Content-Type manually)
         const fd = new FormData();
-        fd.append("title", title);
-        fd.append("location", location);
-        fd.append("rent", rent);
+        fd.append("title",         title);
+        fd.append("location",      location);
+        fd.append("rent",          rent);
         fd.append("availableFrom", availableFrom);
-        fd.append("type", type);
-        fd.append("description", description);
-        fd.append("email", email);       // backend expects provider email
-        fd.append("image", imageFile);   // IMPORTANT: do NOT set Content-Type manually
+        fd.append("type",          type);
+        fd.append("description",   description);
+        fd.append("email",         email);      // backend expects provider email
+        fd.append("image",         imageFile);
+        fd.append("h-captcha-response", token); // 🔑 send token
 
         try {
             const res = await fetch(`${window.API_BASE}/api/rooms/add`, {
@@ -88,8 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: fd,
             });
 
+            // reset captcha regardless
+            try { window.hcaptcha?.reset?.(); } catch {}
+
             if (!res.ok) {
-                // show backend message if any
                 const txt = await safeText(res);
                 toast("❌ Failed to post room: " + (txt || `HTTP ${res.status}`));
                 return;
@@ -99,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
             form.reset();
             if (previewImg) previewImg.classList.add("hidden");
             if (successMsg) {
-                successMsg.classList.remove("hidden");  // assumes class="hidden" initially
+                successMsg.classList.remove("hidden");
                 successMsg.scrollIntoView({ behavior: "smooth" });
             } else {
                 toast("✅ Room posted successfully!");

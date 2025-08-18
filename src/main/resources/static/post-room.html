@@ -124,6 +124,7 @@
                     </div>
 
                     <!-- Submit -->
+                    <div class="h-captcha" data-sitekey="9a3e68c0-3934-4a76-aeb8-f2669b74c94c"></div>
                     <button type="submit"
                             class="group w-full rounded-xl bg-indigo-600 px-4 py-2.5 font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/30 inline-flex items-center justify-center gap-2">
                         <span class="text-base">Post Room</span>
@@ -195,5 +196,41 @@
 
 <!-- Your existing logic (unchanged) -->
 <script src="js/post-room.js"></script>
+
+<!--<script>-->
+<!--    // hCaptcha token → form hidden input (no other changes)-->
+<!--    (function () {-->
+<!--        const form = document.getElementById('postRoomForm');-->
+<!--        if (!form) return;-->
+
+<!--        form.addEventListener('submit', function (e) {-->
+
+<!--            const token = window.hcaptcha && window.hcaptcha.getResponse-->
+<!--                ? window.hcaptcha.getResponse()-->
+<!--                : '';-->
+
+<!--            if (!token) {-->
+<!--                e.preventDefault();-->
+<!--                alert('Please complete the hCaptcha.');-->
+<!--                return;-->
+<!--            }-->
+
+<!--            // hidden input ensure করো (backend expects: h-captcha-response)-->
+<!--            let hidden = form.querySelector('input[name="h-captcha-response"]');-->
+<!--            if (!hidden) {-->
+<!--                hidden = document.createElement('input');-->
+<!--                hidden.type = 'hidden';-->
+<!--                hidden.name = 'h-captcha-response';-->
+<!--                form.appendChild(hidden);-->
+<!--            }-->
+<!--            hidden.value = token;-->
+
+<!--        }, { capture: true });-->
+<!--    })();-->
+<!--</script>-->
+
+<!-- hCaptcha loader -->
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
 </body>
 </html>
