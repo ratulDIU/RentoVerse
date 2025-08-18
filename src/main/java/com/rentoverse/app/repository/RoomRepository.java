@@ -7,9 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
-    List<Room> findByLocationContainingAndTypeContaining(String location, String type);
+    List<Room> findByLocationContainingIgnoreCaseAndTypeContainingIgnoreCase(String location, String type);
     List<Room> findByProvider(User provider);
-
-    // Used by “All Available Rooms”
     List<Room> findByAvailableTrue();
 }

@@ -23,9 +23,15 @@ public class RoomService {
         return roomRepo.findAll();
     }
 
-    public List<Room> filterRooms(String location, String type) {
-        return roomRepo.findByLocationContainingAndTypeContaining(location, type);
-    }
+//    public List<Room> filterRooms(String location, String type) {
+//        return roomRepo.findByLocationContainingAndTypeContaining(location, type);
+//    }
+public List<Room> filterRooms(String location, String type) {
+    String loc = (location == null) ? "" : location;
+    String typ = (type == null || type.isBlank()) ? "" : type;
+    return roomRepo.findByLocationContainingIgnoreCaseAndTypeContainingIgnoreCase(loc, typ);
+}
+
 
     public List<Room> getRoomsByProvider(User provider) {
         return roomRepo.findByProvider(provider);
